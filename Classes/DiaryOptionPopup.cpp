@@ -19,6 +19,7 @@
 #include "FlagSelector.h"
 #include "HelpGameAppPopup.h"
 #include "PasswordPopup.h"
+#include "PieceGame.h"
 
 DiaryOptionPopup* DiaryOptionPopup::create(int t_touch_priority, function<void()> t_end_func)
 {
@@ -116,6 +117,21 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 	selectedFlagSpr->setScale(0.8f);
 	selectedFlagSpr->setPosition(ccp(20, back_in->getContentSize().height/2.f) + ccp(73, 67));
 	back_in->addChild(selectedFlagSpr);
+	
+	
+	CommonButton* t_minigame = CommonButton::createCloseButton(touch_priority);
+	t_minigame->setFunction([=](CCObject* sender)
+							{
+								if(!is_menu_enable)
+									return;
+								
+								is_menu_enable = false;
+								
+								CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
+							});
+	t_minigame->setPosition(selectedFlagSpr->getPosition() + ccp(50,0));
+	back_in->addChild(t_minigame);
+	
 	
 	CCSprite* line1 = CCSprite::create("common_line.png");
 	line1->setScaleX(230.f/line1->getContentSize().width);
