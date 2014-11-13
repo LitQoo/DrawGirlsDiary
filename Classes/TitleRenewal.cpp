@@ -31,6 +31,7 @@
 #include "SetUpPopup.h"
 #include "InterlockPopup.h"
 #include "EnterPasswordPopup.h"
+#include "PieceGame.h"
 
 CCScene* TitleRenewalScene::scene()
 {
@@ -156,6 +157,10 @@ bool TitleRenewalScene::init()
 	else
 	{
 		TRACE();
+		CCSprite* base_back = CCSprite::create("main_back.png");
+		base_back->setPosition(ccp(240,160));
+		addChild(base_back);
+		
 		endSplash();
 	}
 	
@@ -375,65 +380,202 @@ void TitleRenewalScene::realInit()
 	{
 		CCLOG("saved memberID and diaryCode");
 		
-		// 저장된 memberID와 diaryCode가 있음
-		Json::Value t_param;
-		t_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
-		t_param["diaryCode"] = myDSH->getStringForKey(kDSH_Key_diaryCode);
-		graphdog->command("login", t_param, [=](Json::Value result_data)
-						  {
-							  setKeypadEnabled(true);
-							  if(result_data["result"]["code"].asInt() == GDSUCCESS)
-								{
-									// 다이어리 로그인 api 성공
-									if(myDSH->getBoolForKey(kDSH_Key_isDiaryLocked))
-									{
-										EnterPasswordPopup* t_popup = EnterPasswordPopup::create(-9999, [=]()
-																								 {
-																									 startCommunication();
-																								 });
-										addChild(t_popup, 9999);
-									}
-									else
-									{
-										startCommunication();
-									}
-								}
-							  else
-								{
-									// 다이어리 로그인 api 실패
-									if(graphdog->isExistApp())
-									{
-										CCLOG("failed login and not existapp");
-										// 게임이 설치 되어있다.
-										interlockCall();
-									}
-									else
-									{
-										CCLOG("failed login and existapp");
-										// 미설치
-										setupCall();
-									}
-								}
-						  });
-	}
-	else
-	{
-		setKeypadEnabled(true);
-		CCLOG("not saved memberID or diaryCode");
-		// 파라미터 및 회원번호가 저장되어있지 않다.
-		if(graphdog->isExistApp())
+		if(myDSH->is_linked)
 		{
-			CCLOG("setup app");
-			// 게임이 설치 되어있다.
-			interlockCall();
+			setMain();
 		}
 		else
 		{
-			CCLOG("not setup app");
-			// 미설치
-			setupCall();
+			// 저장된 memberID와 diaryCode가 있음
+			Json::Value t_param;
+			t_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
+			t_param["diaryCode"] = myDSH->getStringForKey(kDSH_Key_diaryCode);
+			graphdog->command("login", t_param, [=](Json::Value result_data)
+							  {
+								  setKeypadEnabled(true);
+								  if(result_data["result"]["code"].asInt() == GDSUCCESS)
+								  {
+									  // 다이어리 로그인 api 성공
+									  if(myDSH->getBoolForKey(kDSH_Key_isDiaryLocked))
+									  {
+										  EnterPasswordPopup* t_popup = EnterPasswordPopup::create(-9999, [=]()
+																								   {
+																									   startCommunication();
+																								   });
+										  addChild(t_popup, 9999);
+									  }
+									  else
+									  {
+										  startCommunication();
+									  }
+								  }
+								  else
+								  {
+									  setMain();
+									  
+//								  setKeypadEnabled(true);
+//								  // 다이어리 로그인 api 실패
+//								  if(graphdog->isExistApp())
+//								  {
+//									  CCLOG("failed login and not existapp");
+//									  // 게임이 설치 되어있다.
+//									  interlockCall();
+//								  }
+//								  else
+//								  {
+//									  CCLOG("failed login and existapp");
+//									  // 미설치
+//									  setupCall();
+//								  }
+								  }
+							  });
 		}
 	}
+	else
+	{
+		setMain();
+		
+//		setKeypadEnabled(true);
+//		CCLOG("not saved memberID or diaryCode");
+//		// 파라미터 및 회원번호가 저장되어있지 않다.
+//		if(graphdog->isExistApp())
+//		{
+//			CCLOG("setup app");
+//			// 게임이 설치 되어있다.
+//			interlockCall();
+//		}
+//		else
+//		{
+//			CCLOG("not setup app");
+//			// 미설치
+//			setupCall();
+//		}
+	}
+}
+
+void TitleRenewalScene::setMain()
+{
+	myDSH->setPuzzleMapSceneShowType(kPuzzleMapSceneShowType_stage);
+	
+	is_menu_enable = true;
+	
+	// 다이어리
+	CommonButton* diary_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diary), 12, CCSizeMake(90,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	diary_button->setFunction([=](CCObject* sender)
+							  {
+								  if(!is_menu_enable)
+									  return;
+								  
+								  is_menu_enable = false;
+								  
+								  AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+								  
+								  if(myDSH->is_linked)
+									{
+										changeScene();
+									}
+								  else
+									{
+										if(graphdog->isExistApp())
+										{
+											CCLOG("setup app");
+											// 게임이 설치 되어있다.
+											interlockCall();
+										}
+										else
+										{
+											CCLOG("not setup app");
+											// 미설치
+											setupCall();
+										}
+									}
+							  });
+	diary_button->setPosition(ccp(80, 50));
+	addChild(diary_button, 999);
+	
+	// 상점
+	CommonButton* shop_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_shop), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	shop_button->setFunction([=](CCObject* sender)
+							 {
+								 if(!is_menu_enable)
+									 return;
+								 
+								 is_menu_enable = false;
+								 
+								 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+								 
+								 if(myDSH->is_linked)
+									{
+										
+									}
+								 else
+									{
+										if(graphdog->isExistApp())
+										{
+											CCLOG("setup app");
+											// 게임이 설치 되어있다.
+											interlockCall();
+										}
+										else
+										{
+											CCLOG("not setup app");
+											// 미설치
+											setupCall();
+										}
+									}
+							 });
+	shop_button->setPosition(ccp(170, 50));
+	addChild(shop_button, 999);
+	
+	// 옵션
+	CommonButton* option_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionTitle), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	option_button->setFunction([=](CCObject* sender)
+							   {
+								   if(!is_menu_enable)
+									   return;
+								   
+								   is_menu_enable = false;
+								   
+								   AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+								   
+								   if(myDSH->is_linked)
+								   {
+									   
+								   }
+								   else
+								   {
+									   if(graphdog->isExistApp())
+									   {
+										   CCLOG("setup app");
+										   // 게임이 설치 되어있다.
+										   interlockCall();
+									   }
+									   else
+									   {
+										   CCLOG("not setup app");
+										   // 미설치
+										   setupCall();
+									   }
+								   }
+							   });
+	option_button->setPosition(ccp(250, 50));
+	addChild(option_button, 999);
+	
+	// 게임시작
+	CommonButton* game_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_gamestart), 12, CCSizeMake(130,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	game_button->setFunction([=](CCObject* sender)
+							 {
+								 if(!is_menu_enable)
+									 return;
+								 
+								 is_menu_enable = false;
+								 
+								 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+								 
+								 CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
+							 });
+	game_button->setPosition(ccp(380, 50));
+	addChild(game_button, 999);
 }
 
 void TitleRenewalScene::startCommunication()
@@ -457,6 +599,10 @@ void TitleRenewalScene::startCommunication()
 	Json::Value userdata_param;
 	userdata_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
 	command_list.push_back(CommandParam("getUserData", userdata_param, json_selector(this, TitleRenewalScene::resultGetUserData)));
+	
+	Json::Value properties_param;
+	properties_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
+	command_list.push_back(CommandParam("getuserproperties", properties_param, json_selector(this, TitleRenewalScene::resultGetUserProperties)));
 	
 	startCommand();
 }
@@ -2184,7 +2330,7 @@ void TitleRenewalScene::resultGetUserProperties(Json::Value result_data)
 	{
 		is_receive_fail = true;
 		Json::Value properties_param;
-		properties_param["memberID"] = hspConnector::get()->getSocialID();
+		properties_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
 		command_list.push_back(CommandParam("getuserproperties", properties_param, json_selector(this, TitleRenewalScene::resultGetUserProperties)));
 	}
 	
@@ -2696,15 +2842,19 @@ void TitleRenewalScene::resultGetPuzzleList( Json::Value result_data )
 
 void TitleRenewalScene::endingAction()
 {
-//	CCLOG("ttttt is_loaded_cgp : %d | is_loaded_server : %d | is_preloaded_effect : %d", is_loaded_cgp, is_loaded_server, is_preloaded_effect);
-//	
-//	if(is_loaded_cgp && is_loaded_server && is_preloaded_effect)
-//	{
-		CCDelayTime* t_delay = CCDelayTime::create(2.f);
-		CCCallFunc* t_call = CCCallFunc::create(this, callfunc_selector(TitleRenewalScene::changeScene));
-		CCSequence* t_seq = CCSequence::createWithTwoActions(t_delay, t_call);
-		runAction(t_seq);
-//	}
+	myDSH->is_linked = true;
+	
+	setMain();
+	
+////	CCLOG("ttttt is_loaded_cgp : %d | is_loaded_server : %d | is_preloaded_effect : %d", is_loaded_cgp, is_loaded_server, is_preloaded_effect);
+////	
+////	if(is_loaded_cgp && is_loaded_server && is_preloaded_effect)
+////	{
+//		CCDelayTime* t_delay = CCDelayTime::create(2.f);
+//		CCCallFunc* t_call = CCCallFunc::create(this, callfunc_selector(TitleRenewalScene::changeScene));
+//		CCSequence* t_seq = CCSequence::createWithTwoActions(t_delay, t_call);
+//		runAction(t_seq);
+////	}
 }
 
 void TitleRenewalScene::changeScene()
@@ -2714,7 +2864,6 @@ void TitleRenewalScene::changeScene()
 	
 	TRACE();
 	mySGD->is_safety_mode = myDSH->getBoolForKey(kDSH_Key_isSafetyMode);
-	myDSH->setPuzzleMapSceneShowType(kPuzzleMapSceneShowType_init);
 	CCDirector::sharedDirector()->replaceScene(MainFlowScene::scene());
 //	CCDirector::sharedDirector()->replaceScene(NewMainFlowScene::scene());
 //	CCDirector::sharedDirector()->replaceScene(PuzzleMapScene::scene());

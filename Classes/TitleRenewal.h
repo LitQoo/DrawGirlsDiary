@@ -204,6 +204,8 @@ private:
 	void endingAction();
 	void changeScene();
 	
+	void setMain();
+	
 	bool is_menu_enable;
 	void menuAction(CCObject* sender);
 	

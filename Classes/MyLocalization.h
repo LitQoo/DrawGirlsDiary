@@ -1027,6 +1027,8 @@ typedef enum MyLocalKey_ {
 	
 	kMyLocalKey_eventCard,
 	kMyLocalKey_diaryBottomMent,
+	kMyLocalKey_diary,
+	kMyLocalKey_haveLifeStoneCount,
 	
 	kMyLocalKey_lastkey
 }MyLocalKey;

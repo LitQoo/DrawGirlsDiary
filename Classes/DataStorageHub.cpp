@@ -614,6 +614,7 @@ void DataStorageHub::removeCache()
 
 void DataStorageHub::myInit ()
 {
+	is_linked = false;
 	removeCache();
 	myDefault = SaveData::sharedObject();
 	is_cheat_key_enabled = false;

@@ -279,6 +279,7 @@ public:
 	void fFlush ();
 	void removeCache();
 	void initReturnPair();
+	bool is_linked;
 private:
 	map<string, KSProtectVar<bool>> dsh_cache_bool;
 	map<string, KSProtectVar<bool>>::iterator iter_bool;

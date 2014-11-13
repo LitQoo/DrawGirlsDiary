@@ -1115,6 +1115,8 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("이벤트카드"), kMyLocalKey_eventCard);
 	
 	ko->setObject(CCString::create("* S Diary 에서는 3등급과 4등급 카드를 특별한 버전으로 감상 하실 수 있습니다."), kMyLocalKey_diaryBottomMent);
+	ko->setObject(CCString::create("다이어리"), kMyLocalKey_diary);
+	ko->setObject(CCString::create("생명의 돌 보유수"), kMyLocalKey_haveLifeStoneCount);
 	
 	setObject(ko, "ko");
 }

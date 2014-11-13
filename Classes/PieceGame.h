@@ -31,6 +31,7 @@ public:
 	function<void(CCPoint before_position, CCPoint after_touch_point, PieceOne* touched_target)> change_position;
 	function<bool()> check_on_touch;
 	function<void(bool)> set_on_touch;
+	function<void(CCPoint, bool)> touch_light_func;
 	bool isContainsPoint(CCPoint t_point);
 	CCPoint on_point;
 	
@@ -59,15 +60,22 @@ public:
 	
 	void changePosition(CCPoint before_position, CCPoint after_touch_point, PieceOne* touched_target);
 	bool is_on_touch;
+	void touchLightCase(CCPoint t_position, bool is_end);
 	
 private:
 	
 	vector<PieceOne*> piece_list;
 	
+	CCScale9Sprite* light_img;
 	CCSprite* mini_map;
 	CCNode* target_node;
 	CCSpriteBatchNode* batch_node;
 	ZoomScrollView* t_controler;
+	
+	bool is_menu_enable;
+	int size_value;
+	
+	void onSizeMenu();
 	
 	void initGame();
 	void scrollViewDidScroll(CCScrollView* view);
