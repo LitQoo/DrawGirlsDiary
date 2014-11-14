@@ -98,29 +98,6 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 	back_in->addChild(selectedFlagSpr);
 	
 	
-	CommonButton* close_menu = CommonButton::createCloseButton(touch_priority);
-	close_menu->setPosition(ccp(20, back_in->getContentSize().height/2.f) + ccp(123, 67));
-	close_menu->setFunction([=](CCObject* sender)
-							  {
-								  if(!is_menu_enable)
-									  return;
-								  
-								  is_menu_enable = false;
-								  
-								  AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-								  
-								  myDSH->setStringForKey(kDSH_Key_diaryMemberID, "");
-								  myDSH->setStringForKey(kDSH_Key_diaryCode, "");
-								  
-								  graphdog->setMemberID(atoll(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str()));
-								  graphdog->setSocialID(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str());
-								  
-								  myDSH->is_linked = false;
-								  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
-							  });
-	back_in->addChild(close_menu);
-	
-	
 	CCSprite* line1 = CCSprite::create("common_line.png");
 	line1->setScaleX(230.f/line1->getContentSize().width);
 	line1->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(0,51));
@@ -251,22 +228,38 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 	back_case->addChild(t_close_button);
 	
 	
-//	CCSprite* n_help_img = CCSprite::create("subbutton_pink.png");
-//	KSLabelTTF* n_help_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionContentHelp), mySGD->getFont().c_str(), 12.5f);
-////	n_help_label->enableOuterStroke(ccBLACK, 0.5f, 150, true);
-//	n_help_label->setPosition(ccpFromSize(n_help_img->getContentSize()/2.f) + ccp(0,-1));
-//	n_help_img->addChild(n_help_label);
-//	
-//	CCSprite* s_help_img = CCSprite::create("subbutton_pink.png");
-//	s_help_img->setColor(ccGRAY);
-//	KSLabelTTF* s_help_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionContentHelp), mySGD->getFont().c_str(), 12.5f);
-//	s_help_label->setColor(ccGRAY);
-//	s_help_label->disableOuterStroke();
-//	s_help_label->setPosition(ccpFromSize(s_help_img->getContentSize()/2.f) + ccp(0,-1));
-//	s_help_img->addChild(s_help_label);
-//	
-//	CCMenuItemLambda* help_item = CCMenuItemSpriteLambda::create(n_help_img, s_help_img, [=](CCObject* sender)
-//																 {
+	CCSprite* n_help_img = CCSprite::create("subbutton_pink.png");
+	KSLabelTTF* n_help_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_linkRelease), mySGD->getFont().c_str(), 12.5f);
+//	n_help_label->enableOuterStroke(ccBLACK, 0.5f, 150, true);
+	n_help_label->setPosition(ccpFromSize(n_help_img->getContentSize()/2.f) + ccp(0,-1));
+	n_help_img->addChild(n_help_label);
+	
+	CCSprite* s_help_img = CCSprite::create("subbutton_pink.png");
+	s_help_img->setColor(ccGRAY);
+	KSLabelTTF* s_help_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_linkRelease), mySGD->getFont().c_str(), 12.5f);
+	s_help_label->setColor(ccGRAY);
+	s_help_label->disableOuterStroke();
+	s_help_label->setPosition(ccpFromSize(s_help_img->getContentSize()/2.f) + ccp(0,-1));
+	s_help_img->addChild(s_help_label);
+	
+	CCMenuItemLambda* help_item = CCMenuItemSpriteLambda::create(n_help_img, s_help_img, [=](CCObject* sender)
+																 {
+																	 if(!is_menu_enable)
+																		 return;
+																	 
+																	 is_menu_enable = false;
+																	 
+																	 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																	 
+																	 myDSH->setStringForKey(kDSH_Key_diaryMemberID, "");
+																	 myDSH->setStringForKey(kDSH_Key_diaryCode, "");
+																	 
+																	 graphdog->setMemberID(atoll(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str()));
+																	 graphdog->setSocialID(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str());
+																	 
+																	 myDSH->is_linked = false;
+																	 CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+																	 
 //																	 if(!is_menu_enable)
 //																		 return;
 //																	 
@@ -283,10 +276,10 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 //																		 removeFromParent();
 //																		 
 //																	 });
-//																 });
-//	help_item->setPosition(ccp(225, 25));
-//	
-//	help_menu->addChild(help_item);
+																 });
+	help_item->setPosition(ccp(225, 25));
+	
+	help_menu->addChild(help_item);
 	
 //	CCLabelTTF* r_label = CCLabelTTF::create();
 //	KSLabelTTF* rightnow_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_interlockButton), mySGD->getFont().c_str(), 13);

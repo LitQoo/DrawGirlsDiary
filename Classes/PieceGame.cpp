@@ -174,7 +174,10 @@ bool PieceGame::init()
 	}
 	
 	
-	onSizeMenu();
+	createPauseMenu();
+	
+	size_value = 1;
+	initGame();
 	
 	return true;
 }
@@ -209,7 +212,11 @@ void PieceGame::createPauseMenu()
 																																 is_on_touch = false;
 																															 }, [=]()
 																															 {
-																																 onSizeMenu();
+																																 initGame();
+																															 }, [=](int t_i)
+																															 {
+																																 size_value = t_i;
+																																 initGame();
 																															 });
 																			addChild(t_popup, 999);
 																		});

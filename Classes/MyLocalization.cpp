@@ -1123,6 +1123,7 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("유효하지 않은 연동코드 입니다."), kMyLocalKey_invalidLinkCode);
 	ko->setObject(CCString::create("연동코드를 입력해주세요."), kMyLocalKey_pleaseInputLinkCode);
 	ko->setObject(CCString::create("메뉴"), kMyLocalKey_menu);
+	ko->setObject(CCString::create("연동 해제"), kMyLocalKey_linkRelease);
 	
 	setObject(ko, "ko");
 }

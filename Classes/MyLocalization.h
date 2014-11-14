@@ -1035,6 +1035,7 @@ typedef enum MyLocalKey_ {
 	kMyLocalKey_invalidLinkCode,
 	kMyLocalKey_pleaseInputLinkCode,
 	kMyLocalKey_menu,
+	kMyLocalKey_linkRelease,
 	
 	kMyLocalKey_lastkey
 }MyLocalKey;

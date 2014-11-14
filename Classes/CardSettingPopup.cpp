@@ -29,6 +29,7 @@
 #include "ASPopupView.h"
 #include "AsyncImage.h"
 #include "TitleRenewal.h"
+#include "DiaryOptionPopup.h"
 
 void CardSettingPopup::setHideFinalAction(CCObject *t_final, SEL_CallFunc d_final)
 {
@@ -90,13 +91,13 @@ bool CardSettingPopup::init()
 	addChild(gray, kCSS_Z_gray);
 	
 	main_case = CCSprite::create("mainpopup2_back.png");
-	main_case->setPosition(ccp(240,160+14.f));
+	main_case->setPosition(ccp(240,160-5.f));
 	addChild(main_case, kCSS_Z_back);
 	
-	KSLabelTTF* bottom_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_diaryBottomMent), mySGD->getFont().c_str(), 10);
-	bottom_label->enableOuterStroke(ccBLACK, 0.5f, 60, true);
-	bottom_label->setPosition(ccp(240,7));
-	addChild(bottom_label, kCSS_Z_back);
+//	KSLabelTTF* bottom_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_diaryBottomMent), mySGD->getFont().c_str(), 10);
+//	bottom_label->enableOuterStroke(ccBLACK, 0.5f, 60, true);
+//	bottom_label->setPosition(ccp(240,7));
+//	addChild(bottom_label, kCSS_Z_back);
 	
 	CCSprite* title_back = CCSprite::create("title_tab.png");
 	title_back->setPosition(ccp(60,main_case->getContentSize().height-13));
@@ -253,32 +254,32 @@ bool CardSettingPopup::init()
 	
 	diary_menu->setEnabled(mySGD->getHasGottenCardsSize() > 0);
 	
-//	CCSprite* n_gameapp_img = CCSprite::create("subbutton_pink.png");
-//	KSLabelTTF* n_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_toGameApp), mySGD->getFont().c_str(), 12.5f);
-//	n_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
-//	n_gameapp_label->setPosition(ccpFromSize(n_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
-//	n_gameapp_img->addChild(n_gameapp_label);
-//	
-//	CCSprite* s_gameapp_img = CCSprite::create("subbutton_pink.png");
-//	s_gameapp_img->setColor(ccGRAY);
-//	KSLabelTTF* s_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_toGameApp), mySGD->getFont().c_str(), 12.5f);
-//	s_gameapp_label->setColor(ccGRAY);
-//	s_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
-//	s_gameapp_label->setPosition(ccpFromSize(s_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
-//	s_gameapp_img->addChild(s_gameapp_label);
-//	
-//	CCSprite* d_gameapp_img = GraySprite::create("subbutton_pink.png");
-//	((GraySprite*)d_gameapp_img)->setGray(true);
-//	KSLabelTTF* d_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_toGameApp), mySGD->getFont().c_str(), 12.5f);
-//	d_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
-//	d_gameapp_label->setPosition(ccpFromSize(d_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
-//	d_gameapp_img->addChild(d_gameapp_label);
-//	
-//	
-//	gameapp_menu = CCMenuItemSprite::create(n_gameapp_img, s_gameapp_img, d_gameapp_img, this, menu_selector(CardSettingPopup::menuAction));
-//	gameapp_menu->setTag(kCSS_MT_gameapp);
-//	gameapp_menu->setPosition(ccp(290,16));
-//	tab_menu->addChild(gameapp_menu);
+	CCSprite* n_gameapp_img = CCSprite::create("subbutton_pink.png");
+	KSLabelTTF* n_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_option), mySGD->getFont().c_str(), 12.5f);
+	n_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	n_gameapp_label->setPosition(ccpFromSize(n_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
+	n_gameapp_img->addChild(n_gameapp_label);
+	
+	CCSprite* s_gameapp_img = CCSprite::create("subbutton_pink.png");
+	s_gameapp_img->setColor(ccGRAY);
+	KSLabelTTF* s_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_option), mySGD->getFont().c_str(), 12.5f);
+	s_gameapp_label->setColor(ccGRAY);
+	s_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	s_gameapp_label->setPosition(ccpFromSize(s_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
+	s_gameapp_img->addChild(s_gameapp_label);
+	
+	CCSprite* d_gameapp_img = GraySprite::create("subbutton_pink.png");
+	((GraySprite*)d_gameapp_img)->setGray(true);
+	KSLabelTTF* d_gameapp_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_option), mySGD->getFont().c_str(), 12.5f);
+	d_gameapp_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	d_gameapp_label->setPosition(ccpFromSize(d_gameapp_img->getContentSize()/2.f) + ccp(0,-1));
+	d_gameapp_img->addChild(d_gameapp_label);
+	
+	
+	gameapp_menu = CCMenuItemSprite::create(n_gameapp_img, s_gameapp_img, d_gameapp_img, this, menu_selector(CardSettingPopup::menuAction));
+	gameapp_menu->setTag(kCSS_MT_gameapp);
+	gameapp_menu->setPosition(ccp(290,16));
+	tab_menu->addChild(gameapp_menu);
 	
 	/*
 	CCSprite* n_strength_img = GraySprite::create("subbutton_pink.png");
@@ -958,10 +959,16 @@ void CardSettingPopup::menuAction(CCObject* pSender)
 		}
 		else if(tag == kCSS_MT_gameapp)
 		{
-			graphdog->openOriginalApp();
+			DiaryOptionPopup* t_popup = DiaryOptionPopup::create(-500, [=]()
+																 {
+																	 is_menu_enable = true;
+																 });
+			addChild(t_popup, 999);
 			
-//			if(CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-				CCDirector::sharedDirector()->end();
+//			graphdog->openOriginalApp();
+//			
+////			if(CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+//				CCDirector::sharedDirector()->end();
 		}
 		else if(tag == kCSS_MT_alignDefault)
 		{

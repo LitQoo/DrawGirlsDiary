@@ -15,22 +15,24 @@
 #include "CommonAnimation.h"
 #include "MyLocalization.h"
 #include "TitleRenewal.h"
+#include "CCMenuLambda.h"
 
-GamePausePopup* GamePausePopup::create(int t_touch_priority, function<void()> t_end_func, function<void()> t_restart_func)
+GamePausePopup* GamePausePopup::create(int t_touch_priority, function<void()> t_end_func, function<void()> t_restart_func, function<void(int)> t_size_change_func)
 {
 	GamePausePopup* t_mup = new GamePausePopup();
-	t_mup->myInit(t_touch_priority, t_end_func, t_restart_func);
+	t_mup->myInit(t_touch_priority, t_end_func, t_restart_func, t_size_change_func);
 	t_mup->autorelease();
 	return t_mup;
 }
 
-void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, function<void()> t_restart_func)
+void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, function<void()> t_restart_func, function<void(int)> t_size_change_func)
 {
 	is_menu_enable = false;
 	
 	touch_priority = t_touch_priority;
 	end_func = t_end_func;
 	restart_func = t_restart_func;
+	size_change_func = t_size_change_func;
 	
 	gray = CCSprite::create("back_gray.png");
 	gray->setOpacity(0);
@@ -83,117 +85,210 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 							  });
 	back_case->addChild(close_button);
 	
+	CCMenuLambda* t_menus = CCMenuLambda::create();
+	t_menus->setPosition(ccp(0,0));
+	back_in->addChild(t_menus);
+	
+	t_menus->setTouchPriority(touch_priority);
 	
 	{
-		CCSprite* level1_back = CCSprite::create("stop_level.png");
-		level1_back->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(-62,33));
-		back_in->addChild(level1_back);
+		CCSprite* n_level1_back = CCSprite::create("stop_level.png");
+		CCSprite* s_level1_back = CCSprite::create("stop_level.png");
+		s_level1_back->setColor(ccGRAY);
+		
+		CCMenuItemSpriteLambda* level1_item = CCMenuItemSpriteLambda::create(n_level1_back, s_level1_back, [=](CCObject* sender)
+																			 {
+																				 if(!is_menu_enable)
+																					 return;
+																				 
+																				 is_menu_enable = false;
+																				 
+																				 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																				 
+																				 CommonAnimation::closePopup(this, m_container, gray, [=](){
+																					 
+																				 }, [=](){
+																					 size_change_func(1);
+																					 removeFromParent();
+																				 });
+																			 });
+		level1_item->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(-62,33));
+		t_menus->addChild(level1_item);
 		
 		KSLabelTTF* grade_label = KSLabelTTF::create("초급", mySGD->getFont().c_str(), 13);
 		grade_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		grade_label->setPosition(ccp(38,41));
-		level1_back->addChild(grade_label);
+		grade_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,41));
+		back_in->addChild(grade_label);
 		
 		KSLabelTTF* cell_count_label = KSLabelTTF::create("3x4", mySGD->getFont().c_str(), 18);
 		cell_count_label->setGradientColor(ccc4(255, 115, 250, 255), ccc4(215, 60, 130, 255), ccp(0,-1));
 		cell_count_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		cell_count_label->setPosition(ccp(38,21));
-		level1_back->addChild(cell_count_label);
+		cell_count_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,21));
+		back_in->addChild(cell_count_label);
 		
-		KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
-		reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_label->setPosition(ccp(90,42));
-		level1_back->addChild(reward_label);
-		
-		KSLabelTTF* reward_count = KSLabelTTF::create("+1", mySGD->getFont().c_str(), 13);
-		reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_count->setAnchorPoint(ccp(0,0.5f));
-		reward_count->setPosition(ccp(90,21));
-		level1_back->addChild(reward_count);
+		if(myDSH->is_linked)
+		{
+			KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
+			reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
+			back_in->addChild(reward_label);
+			
+			KSLabelTTF* reward_count = KSLabelTTF::create("+1", mySGD->getFont().c_str(), 13);
+			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_count->setAnchorPoint(ccp(0,0.5f));
+			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
+			back_in->addChild(reward_count);
+		}
 	}
 	
 	{
-		CCSprite* level2_back = CCSprite::create("stop_level.png");
-		level2_back->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(62,33));
-		back_in->addChild(level2_back);
+		CCSprite* n_level1_back = CCSprite::create("stop_level.png");
+		CCSprite* s_level1_back = CCSprite::create("stop_level.png");
+		s_level1_back->setColor(ccGRAY);
+		
+		CCMenuItemSpriteLambda* level1_item = CCMenuItemSpriteLambda::create(n_level1_back, s_level1_back, [=](CCObject* sender)
+																			 {
+																				 if(!is_menu_enable)
+																					 return;
+																				 
+																				 is_menu_enable = false;
+																				 
+																				 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																				 
+																				 CommonAnimation::closePopup(this, m_container, gray, [=](){
+																					 
+																				 }, [=](){
+																					 size_change_func(2);
+																					 removeFromParent();
+																				 });
+																			 });
+		level1_item->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(62,33));
+		t_menus->addChild(level1_item);
 		
 		KSLabelTTF* grade_label = KSLabelTTF::create("중급", mySGD->getFont().c_str(), 13);
 		grade_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		grade_label->setPosition(ccp(38,41));
-		level2_back->addChild(grade_label);
+		grade_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,41));
+		back_in->addChild(grade_label);
 		
 		KSLabelTTF* cell_count_label = KSLabelTTF::create("4x5", mySGD->getFont().c_str(), 18);
 		cell_count_label->setGradientColor(ccc4(255, 115, 250, 255), ccc4(215, 60, 130, 255), ccp(0,-1));
 		cell_count_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		cell_count_label->setPosition(ccp(38,21));
-		level2_back->addChild(cell_count_label);
+		cell_count_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,21));
+		back_in->addChild(cell_count_label);
 		
-		KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
-		reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_label->setPosition(ccp(90,42));
-		level2_back->addChild(reward_label);
-		
-		KSLabelTTF* reward_count = KSLabelTTF::create("+2", mySGD->getFont().c_str(), 13);
-		reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_count->setAnchorPoint(ccp(0,0.5f));
-		reward_count->setPosition(ccp(90,21));
-		level2_back->addChild(reward_count);
+		if(myDSH->is_linked)
+		{
+			KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
+			reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
+			back_in->addChild(reward_label);
+			
+			KSLabelTTF* reward_count = KSLabelTTF::create("+3", mySGD->getFont().c_str(), 13);
+			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_count->setAnchorPoint(ccp(0,0.5f));
+			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
+			back_in->addChild(reward_count);
+		}
 	}
 	
 	{
-		CCSprite* level3_back = CCSprite::create("stop_level.png");
-		level3_back->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(-62,-33));
-		back_in->addChild(level3_back);
+		CCSprite* n_level1_back = CCSprite::create("stop_level.png");
+		CCSprite* s_level1_back = CCSprite::create("stop_level.png");
+		s_level1_back->setColor(ccGRAY);
+		
+		CCMenuItemSpriteLambda* level1_item = CCMenuItemSpriteLambda::create(n_level1_back, s_level1_back, [=](CCObject* sender)
+																			 {
+																				 if(!is_menu_enable)
+																					 return;
+																				 
+																				 is_menu_enable = false;
+																				 
+																				 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																				 
+																				 CommonAnimation::closePopup(this, m_container, gray, [=](){
+																					 
+																				 }, [=](){
+																					 size_change_func(3);
+																					 removeFromParent();
+																				 });
+																			 });
+		level1_item->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(-62,-33));
+		t_menus->addChild(level1_item);
 		
 		KSLabelTTF* grade_label = KSLabelTTF::create("고급", mySGD->getFont().c_str(), 13);
 		grade_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		grade_label->setPosition(ccp(38,41));
-		level3_back->addChild(grade_label);
+		grade_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,41));
+		back_in->addChild(grade_label);
 		
 		KSLabelTTF* cell_count_label = KSLabelTTF::create("5x7", mySGD->getFont().c_str(), 18);
 		cell_count_label->setGradientColor(ccc4(255, 115, 250, 255), ccc4(215, 60, 130, 255), ccp(0,-1));
 		cell_count_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		cell_count_label->setPosition(ccp(38,21));
-		level3_back->addChild(cell_count_label);
+		cell_count_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,21));
+		back_in->addChild(cell_count_label);
 		
-		KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
-		reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_label->setPosition(ccp(90,42));
-		level3_back->addChild(reward_label);
-		
-		KSLabelTTF* reward_count = KSLabelTTF::create("+3", mySGD->getFont().c_str(), 13);
-		reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_count->setAnchorPoint(ccp(0,0.5f));
-		reward_count->setPosition(ccp(90,21));
-		level3_back->addChild(reward_count);
+		if(myDSH->is_linked)
+		{
+			KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
+			reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
+			back_in->addChild(reward_label);
+			
+			KSLabelTTF* reward_count = KSLabelTTF::create("+5", mySGD->getFont().c_str(), 13);
+			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_count->setAnchorPoint(ccp(0,0.5f));
+			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
+			back_in->addChild(reward_count);
+		}
 	}
 	
 	{
-		CCSprite* level4_back = CCSprite::create("stop_level.png");
-		level4_back->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(62,-33));
-		back_in->addChild(level4_back);
+		CCSprite* n_level1_back = CCSprite::create("stop_level.png");
+		CCSprite* s_level1_back = CCSprite::create("stop_level.png");
+		s_level1_back->setColor(ccGRAY);
+		
+		CCMenuItemSpriteLambda* level1_item = CCMenuItemSpriteLambda::create(n_level1_back, s_level1_back, [=](CCObject* sender)
+																			 {
+																				 if(!is_menu_enable)
+																					 return;
+																				 
+																				 is_menu_enable = false;
+																				 
+																				 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																				 
+																				 CommonAnimation::closePopup(this, m_container, gray, [=](){
+																					 
+																				 }, [=](){
+																					 size_change_func(4);
+																					 removeFromParent();
+																				 });
+																			 });
+		level1_item->setPosition(ccpFromSize(back_in->getContentSize()/2.f) + ccp(62,-33));
+		t_menus->addChild(level1_item);
 		
 		KSLabelTTF* grade_label = KSLabelTTF::create("최고급", mySGD->getFont().c_str(), 13);
 		grade_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		grade_label->setPosition(ccp(38,41));
-		level4_back->addChild(grade_label);
+		grade_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,41));
+		back_in->addChild(grade_label);
 		
 		KSLabelTTF* cell_count_label = KSLabelTTF::create("6x8", mySGD->getFont().c_str(), 18);
 		cell_count_label->setGradientColor(ccc4(255, 115, 250, 255), ccc4(215, 60, 130, 255), ccp(0,-1));
 		cell_count_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		cell_count_label->setPosition(ccp(38,21));
-		level4_back->addChild(cell_count_label);
+		cell_count_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(38,21));
+		back_in->addChild(cell_count_label);
 		
-		KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
-		reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_label->setPosition(ccp(90,42));
-		level4_back->addChild(reward_label);
-		
-		KSLabelTTF* reward_count = KSLabelTTF::create("+4", mySGD->getFont().c_str(), 13);
-		reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
-		reward_count->setAnchorPoint(ccp(0,0.5f));
-		reward_count->setPosition(ccp(90,21));
-		level4_back->addChild(reward_count);
+		if(myDSH->is_linked)
+		{
+			KSLabelTTF* reward_label = KSLabelTTF::create("보상", mySGD->getFont().c_str(), 12);
+			reward_label->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
+			back_in->addChild(reward_label);
+			
+			KSLabelTTF* reward_count = KSLabelTTF::create("+7", mySGD->getFont().c_str(), 13);
+			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
+			reward_count->setAnchorPoint(ccp(0,0.5f));
+			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
+			back_in->addChild(reward_count);
+		}
 	}
 	
 	

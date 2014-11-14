@@ -497,7 +497,7 @@ void TitleRenewalScene::setMain()
 	is_menu_enable = true;
 	
 	// 다이어리
-	CommonButton* diary_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diary), 12, CCSizeMake(90,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	CommonButton* diary_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diary), 18.5f, CCSizeMake(155,58), CCScale9Sprite::create("subapp_bt_start.png", CCRectMake(0,0,155,58), CCRectMake(77, 28, 1, 2)), -999);
 	diary_button->setFunction([=](CCObject* sender)
 							  {
 								  if(!is_menu_enable)
@@ -535,7 +535,7 @@ void TitleRenewalScene::setMain()
 //										}
 									}
 							  });
-	diary_button->setPosition(ccp(80, 50));
+	diary_button->setPosition(ccp(150, 40));
 	addChild(diary_button, 999);
 	
 //	// 상점
@@ -573,53 +573,53 @@ void TitleRenewalScene::setMain()
 //	addChild(shop_button, 999);
 	
 	// 옵션
-	CommonButton* option_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionTitle), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
-	option_button->setFunction([=](CCObject* sender)
-							   {
-								   if(!is_menu_enable)
-									   return;
-								   
-								   is_menu_enable = false;
-								   
-								   AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-								   
-								   if(myDSH->is_linked)
-								   {
-									   DiaryOptionPopup* t_popup = DiaryOptionPopup::create(-500, [=]()
-																							{
-																								is_menu_enable = true;
-																							});
-									   addChild(t_popup, 999);
-								   }
-								   else
-								   {
-									   LinkPopup* t_popup = LinkPopup::create(-999, [=]()
-																			  {
-																				  is_menu_enable = true;
-																			  }, [=]()
-																			  {
-																				  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
-																			  });
-									   addChild(t_popup, 999);
-//									   if(graphdog->isExistApp())
-//									   {
-//										   CCLOG("setup app");
-//										   // 게임이 설치 되어있다.
-//										   interlockCall();
-//									   }
-//									   else
-//									   {
-//										   CCLOG("not setup app");
-//										   // 미설치
-//										   setupCall();
-//									   }
-								   }
-							   });
-	option_button->setPosition(ccp(200, 50));
-	addChild(option_button, 999);
+//	CommonButton* option_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionTitle), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+//	option_button->setFunction([=](CCObject* sender)
+//							   {
+//								   if(!is_menu_enable)
+//									   return;
+//								   
+//								   is_menu_enable = false;
+//								   
+//								   AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+//								   
+//								   if(myDSH->is_linked)
+//								   {
+//									   DiaryOptionPopup* t_popup = DiaryOptionPopup::create(-500, [=]()
+//																							{
+//																								is_menu_enable = true;
+//																							});
+//									   addChild(t_popup, 999);
+//								   }
+//								   else
+//								   {
+//									   LinkPopup* t_popup = LinkPopup::create(-999, [=]()
+//																			  {
+//																				  is_menu_enable = true;
+//																			  }, [=]()
+//																			  {
+//																				  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+//																			  });
+//									   addChild(t_popup, 999);
+////									   if(graphdog->isExistApp())
+////									   {
+////										   CCLOG("setup app");
+////										   // 게임이 설치 되어있다.
+////										   interlockCall();
+////									   }
+////									   else
+////									   {
+////										   CCLOG("not setup app");
+////										   // 미설치
+////										   setupCall();
+////									   }
+//								   }
+//							   });
+//	option_button->setPosition(ccp(200, 50));
+//	addChild(option_button, 999);
 	
 	// 게임시작
-	CommonButton* game_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_gamestart), 12, CCSizeMake(130,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+	CommonButton* game_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_gamestart), 18.5f, CCSizeMake(155,58), CCScale9Sprite::create("subapp_bt_start.png", CCRectMake(0,0,155,58), CCRectMake(77, 28, 1, 2)), -999);
 	game_button->setFunction([=](CCObject* sender)
 							 {
 								 if(!is_menu_enable)
@@ -631,7 +631,7 @@ void TitleRenewalScene::setMain()
 								 
 								 CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
 							 });
-	game_button->setPosition(ccp(380, 50));
+	game_button->setPosition(ccp(330, 40));
 	addChild(game_button, 999);
 }
 
