@@ -11,6 +11,7 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
+#include "jsoncpp/json.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -49,6 +50,8 @@ private:
 	virtual void registerWithTouchDispatcher(void);
 };
 
+class LoadingLayer;
+class KSLabelTTF;
 class PieceGame : public CCLayer, public CCScrollViewDelegate
 {
 public:
@@ -66,20 +69,31 @@ private:
 	
 	vector<PieceOne*> piece_list;
 	
+	LoadingLayer* t_loading;
+	KSLabelTTF* life_stone_count;
+	KSLabelTTF* success_label;
+	
 	CCScale9Sprite* light_img;
 	CCSprite* mini_map;
 	CCNode* target_node;
 	CCSpriteBatchNode* batch_node;
 	ZoomScrollView* t_controler;
 	
+	CCSprite* map_case;
+	CCScale9Sprite* img_case;
+	CCSprite* img_back;
+	
 	bool is_menu_enable;
 	int size_value;
 	
 	void onSizeMenu();
 	
+	void createPauseMenu();
+	
 	void initGame();
 	void scrollViewDidScroll(CCScrollView* view);
 	void scrollViewDidZoom(CCScrollView* view);
+	void resultReward(Json::Value result_data);
 };
 
 #endif /* defined(__DgDiary__PieceGame__) */

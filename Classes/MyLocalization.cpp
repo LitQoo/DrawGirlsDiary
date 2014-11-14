@@ -1116,7 +1116,13 @@ void MyLocal::ko()
 	
 	ko->setObject(CCString::create("* S Diary 에서는 3등급과 4등급 카드를 특별한 버전으로 감상 하실 수 있습니다."), kMyLocalKey_diaryBottomMent);
 	ko->setObject(CCString::create("다이어리"), kMyLocalKey_diary);
-	ko->setObject(CCString::create("생명의 돌 보유수"), kMyLocalKey_haveLifeStoneCount);
+	ko->setObject(CCString::create("생명의 돌"), kMyLocalKey_haveLifeStoneCount);
+	
+	ko->setObject(CCString::create("연동필요"), kMyLocalKey_link);
+	ko->setObject(CCString::create("<font newline=15>연동코드가 필요합니다.</font><font newline=15>땅따먹기 앱에서 발급 받은</font><font>연동코드를 입력해주세요.</font>"), kMyLocalKey_notLinkedDoYouWannaLink);
+	ko->setObject(CCString::create("유효하지 않은 연동코드 입니다."), kMyLocalKey_invalidLinkCode);
+	ko->setObject(CCString::create("연동코드를 입력해주세요."), kMyLocalKey_pleaseInputLinkCode);
+	ko->setObject(CCString::create("메뉴"), kMyLocalKey_menu);
 	
 	setObject(ko, "ko");
 }

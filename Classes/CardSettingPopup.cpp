@@ -27,8 +27,8 @@
 #include "CCMenuLambda.h"
 #include "TypingBox.h"
 #include "ASPopupView.h"
-#include "DiaryOptionPopup.h"
 #include "AsyncImage.h"
+#include "TitleRenewal.h"
 
 void CardSettingPopup::setHideFinalAction(CCObject *t_final, SEL_CallFunc d_final)
 {
@@ -141,8 +141,8 @@ bool CardSettingPopup::init()
 	main_inner->addChild(t_suction);
 	
 	
-	CCSprite* n_option = CCSprite::create("subapp_option.png");
-	CCSprite* s_option = CCSprite::create("subapp_option.png");
+	CCSprite* n_option = CCSprite::create("common_button_close.png");
+	CCSprite* s_option = CCSprite::create("common_button_close.png");
 	s_option->setColor(ccGRAY);
 	
 	CCMenuItem* option_item = CCMenuItemSprite::create(n_option, s_option, this, menu_selector(CardSettingPopup::menuAction));
@@ -884,7 +884,9 @@ void CardSettingPopup::endHidePopup()
 {
 	if(target_final)
 		(target_final->*delegate_final)();
-	removeFromParent();
+	
+	CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+//	removeFromParent();
 }
 
 CCPoint CardSettingPopup::getContentPosition(int t_tag)
@@ -951,11 +953,8 @@ void CardSettingPopup::menuAction(CCObject* pSender)
 //				hidePopup();
 //			}
 			
-			DiaryOptionPopup* t_popup = DiaryOptionPopup::create(-500, [=]()
-																 {
-																	 is_menu_enable = true;
-																 });
-			addChild(t_popup, kCSS_Z_popup);
+			target_final = NULL;
+			hidePopup();
 		}
 		else if(tag == kCSS_MT_gameapp)
 		{

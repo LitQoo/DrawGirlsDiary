@@ -19,6 +19,7 @@
 #include "FlagSelector.h"
 #include "HelpGameAppPopup.h"
 #include "PasswordPopup.h"
+#include "TitleRenewal.h"
 
 DiaryOptionPopup* DiaryOptionPopup::create(int t_touch_priority, function<void()> t_end_func)
 {
@@ -85,27 +86,6 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 	back_case->addChild(title_label);
 	TRACE();
 	
-	//	CommonButton* close_button = CommonButton::createCloseButton(touch_priority);
-	//	close_button->setPosition(ccp(back_case->getContentSize().width-25,back_case->getContentSize().height-22));
-	//	close_button->setFunction([=](CCObject* sender)
-	//							  {
-	//								  if(!is_menu_enable)
-	//									  return;
-	//
-	//								  is_menu_enable = false;
-	//
-	//								  AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-	//
-	//								  CommonAnimation::closePopup(this, m_container, gray, [=](){
-	//
-	//								  }, [=](){
-	//									  end_func();
-	//									  removeFromParent();
-	//
-	//								  });
-	//							  });
-	//	back_case->addChild(close_button);
-	
 	KSLabelTTF* country_title = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionContentCountry), mySGD->getFont().c_str(), 13);
 	country_title->setAnchorPoint(ccp(0,0.5f));
 	country_title->setPosition(ccp(20, back_in->getContentSize().height/2.f) + ccp(0, 67));
@@ -116,6 +96,29 @@ void DiaryOptionPopup::myInit(int t_touch_priority, function<void()> t_end_func)
 	selectedFlagSpr->setScale(0.8f);
 	selectedFlagSpr->setPosition(ccp(20, back_in->getContentSize().height/2.f) + ccp(73, 67));
 	back_in->addChild(selectedFlagSpr);
+	
+	
+	CommonButton* close_menu = CommonButton::createCloseButton(touch_priority);
+	close_menu->setPosition(ccp(20, back_in->getContentSize().height/2.f) + ccp(123, 67));
+	close_menu->setFunction([=](CCObject* sender)
+							  {
+								  if(!is_menu_enable)
+									  return;
+								  
+								  is_menu_enable = false;
+								  
+								  AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+								  
+								  myDSH->setStringForKey(kDSH_Key_diaryMemberID, "");
+								  myDSH->setStringForKey(kDSH_Key_diaryCode, "");
+								  
+								  graphdog->setMemberID(atoll(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str()));
+								  graphdog->setSocialID(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str());
+								  
+								  myDSH->is_linked = false;
+								  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+							  });
+	back_in->addChild(close_menu);
 	
 	
 	CCSprite* line1 = CCSprite::create("common_line.png");

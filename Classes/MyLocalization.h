@@ -1030,6 +1030,12 @@ typedef enum MyLocalKey_ {
 	kMyLocalKey_diary,
 	kMyLocalKey_haveLifeStoneCount,
 	
+	kMyLocalKey_link,
+	kMyLocalKey_notLinkedDoYouWannaLink,
+	kMyLocalKey_invalidLinkCode,
+	kMyLocalKey_pleaseInputLinkCode,
+	kMyLocalKey_menu,
+	
 	kMyLocalKey_lastkey
 }MyLocalKey;
 

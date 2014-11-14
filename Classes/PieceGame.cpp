@@ -16,6 +16,8 @@
 #include "CCMenuLambda.h"
 #include "GamePausePopup.h"
 #include "MyLocalization.h"
+#include "LoadingLayer.h"
+#include "ASPopupView.h"
 
 ZoomScrollView* ZoomScrollView::create(CCSize t_init_size)
 {
@@ -126,9 +128,13 @@ bool PieceGame::init()
 	
 	light_img = NULL;
 	
+	CCSprite* main_back = CCSprite::create("main_back.png");
+	main_back->setPosition(ccp(240,myDSH->ui_center_y));
+	addChild(main_back);
+	
 	target_node = CCNode::create();
 	target_node->setScale(430.f/320.f);
-	addChild(target_node);
+	addChild(target_node, 1);
 	
 	CCSprite* t_container = CCSprite::create("whitepaper2.png", CCRectMake(0, 0, 40, 430.f*target_node->getScale()));
 	
@@ -138,14 +144,20 @@ bool PieceGame::init()
 	t_controler->setContainer(t_container);
 	t_controler->setDelegate(this);
 	addChild(t_controler);
+	t_controler->setTouchEnabled(false);
 	
+	map_case = NULL;
 	mini_map = NULL;
+	
+	img_case = NULL;
+	img_back = NULL;
+	
 	piece_list.clear();
 	
 	if(myDSH->is_linked)
 	{
 		CCSprite* life_stone_back = CCSprite::create("subapp_stonecount.png");
-		life_stone_back->setPosition(ccp(480-life_stone_back->getContentSize().width/2.f, myDSH->ui_top-life_stone_back->getContentSize().height/2.f));
+		life_stone_back->setPosition(ccp(life_stone_back->getContentSize().width/2.f - 4, myDSH->ui_top - 50 - life_stone_back->getContentSize().height/2.f));
 		addChild(life_stone_back, 2);
 		
 		KSLabelTTF* life_stone_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_haveLifeStoneCount), mySGD->getFont().c_str(), 11);
@@ -153,11 +165,11 @@ bool PieceGame::init()
 		life_stone_label->setPosition(ccpFromSize(life_stone_back->getContentSize()/2.f) + ccp(0,9));
 		life_stone_back->addChild(life_stone_label);
 		
-		KSLabelTTF* life_stone_count = KSLabelTTF::create(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)), mySGD->getFont().c_str(), 18);
+		life_stone_count = KSLabelTTF::create(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)), mySGD->getFont().c_str(), 18);
 		life_stone_count->setColor(ccc3(255, 170, 20));
 		life_stone_count->enableOuterStroke(ccBLACK, 1, 128, true);
 		life_stone_count->setAnchorPoint(ccp(0,0.5f));
-		life_stone_count->setPosition(ccpFromSize(life_stone_back->getContentSize()/2.f) + ccp(-2,-9));
+		life_stone_count->setPosition(ccpFromSize(life_stone_back->getContentSize()/2.f) + ccp(0,-9));
 		life_stone_back->addChild(life_stone_count);
 	}
 	
@@ -165,6 +177,50 @@ bool PieceGame::init()
 	onSizeMenu();
 	
 	return true;
+}
+
+void PieceGame::createPauseMenu()
+{
+	CCSprite* n_pause = CCSprite::create("subapp_stop.png");
+	KSLabelTTF* n_menu = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_menu), mySGD->getFont().c_str(), 15);
+	n_menu->enableOuterStroke(ccBLACK, 1.f, 170, true);
+	n_menu->setPosition(ccpFromSize(n_pause->getContentSize()/2.f));
+	n_pause->addChild(n_menu);
+	CCSprite* s_pause = CCSprite::create("subapp_stop.png");
+	s_pause->setColor(ccGRAY);
+	KSLabelTTF* s_menu = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_menu), mySGD->getFont().c_str(), 15);
+	s_menu->enableOuterStroke(ccBLACK, 1.f, 170, true);
+	s_menu->setPosition(ccpFromSize(s_pause->getContentSize()/2.f));
+	s_pause->addChild(s_menu);
+	
+	CCMenuItemSpriteLambda* pause_item = CCMenuItemSpriteLambda::create(n_pause, s_pause, [=](CCObject* sender)
+																		{
+																			if(!is_menu_enable || is_on_touch)
+																				return;
+																			
+																			is_menu_enable = false;
+																			is_on_touch = true;
+																			
+																			AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																			
+																			GamePausePopup* t_popup = GamePausePopup::create(-300, [=]()
+																															 {
+																																 is_menu_enable = true;
+																																 is_on_touch = false;
+																															 }, [=]()
+																															 {
+																																 onSizeMenu();
+																															 });
+																			addChild(t_popup, 999);
+																		});
+	pause_item->setPosition(ccp(n_pause->getContentSize().width/2.f - 4, myDSH->ui_top - n_pause->getContentSize().height/2.f));
+	
+	CCMenuLambda* ui_menu = CCMenuLambda::create();
+	ui_menu->setPosition(CCPointZero);
+	addChild(ui_menu, 2);
+	ui_menu->setTouchPriority(-200);
+	
+	ui_menu->addChild(pause_item);
 }
 
 void PieceGame::onSizeMenu()
@@ -196,38 +252,7 @@ void PieceGame::onSizeMenu()
 																		
 																		is_menu_enable = false;
 																		
-																		CCSprite* n_pause = CCSprite::create("subapp_stop.png");
-																		CCSprite* s_pause = CCSprite::create("subapp_stop.png");
-																		s_pause->setColor(ccGRAY);
-																		
-																		CCMenuItemSpriteLambda* pause_item = CCMenuItemSpriteLambda::create(n_pause, s_pause, [=](CCObject* sender)
-																																			{
-																																				if(!is_menu_enable || is_on_touch)
-																																					return;
-																																				
-																																				is_menu_enable = false;
-																																				is_on_touch = true;
-																																				
-																																				AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-																																				
-																																				GamePausePopup* t_popup = GamePausePopup::create(-300, [=]()
-																																																 {
-																																																	 is_menu_enable = true;
-																																																	 is_on_touch = false;
-																																																 }, [=]()
-																																																 {
-																																																	 onSizeMenu();
-																																																 });
-																																				addChild(t_popup, 999);
-																																			});
-																		pause_item->setPosition(ccp(n_pause->getContentSize().width/2.f, myDSH->ui_top - n_pause->getContentSize().height/2.f));
-																		
-																		CCMenuLambda* ui_menu = CCMenuLambda::create();
-																		ui_menu->setPosition(CCPointZero);
-																		addChild(ui_menu, 2);
-																		ui_menu->setTouchPriority(-200);
-																		
-																		ui_menu->addChild(pause_item);
+																		createPauseMenu();
 																		
 																		size_value = 1;
 																		initGame();
@@ -248,38 +273,7 @@ void PieceGame::onSizeMenu()
 																		
 																		is_menu_enable = false;
 																		
-																		CCSprite* n_pause = CCSprite::create("subapp_stop.png");
-																		CCSprite* s_pause = CCSprite::create("subapp_stop.png");
-																		s_pause->setColor(ccGRAY);
-																		
-																		CCMenuItemSpriteLambda* pause_item = CCMenuItemSpriteLambda::create(n_pause, s_pause, [=](CCObject* sender)
-																																			{
-																																				if(!is_menu_enable || is_on_touch)
-																																					return;
-																																				
-																																				is_menu_enable = false;
-																																				is_on_touch = true;
-																																				
-																																				AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-																																				
-																																				GamePausePopup* t_popup = GamePausePopup::create(-300, [=]()
-																																																 {
-																																																	 is_menu_enable = true;
-																																																	 is_on_touch = false;
-																																																 }, [=]()
-																																																 {
-																																																	 onSizeMenu();
-																																																 });
-																																				addChild(t_popup, 999);
-																																			});
-																		pause_item->setPosition(ccp(n_pause->getContentSize().width/2.f, myDSH->ui_top - n_pause->getContentSize().height/2.f));
-																		
-																		CCMenuLambda* ui_menu = CCMenuLambda::create();
-																		ui_menu->setPosition(CCPointZero);
-																		addChild(ui_menu, 2);
-																		ui_menu->setTouchPriority(-200);
-																		
-																		ui_menu->addChild(pause_item);
+																		createPauseMenu();
 																		
 																		size_value = 2;
 																		initGame();
@@ -300,38 +294,7 @@ void PieceGame::onSizeMenu()
 																		
 																		is_menu_enable = false;
 																		
-																		CCSprite* n_pause = CCSprite::create("subapp_stop.png");
-																		CCSprite* s_pause = CCSprite::create("subapp_stop.png");
-																		s_pause->setColor(ccGRAY);
-																		
-																		CCMenuItemSpriteLambda* pause_item = CCMenuItemSpriteLambda::create(n_pause, s_pause, [=](CCObject* sender)
-																																			{
-																																				if(!is_menu_enable || is_on_touch)
-																																					return;
-																																				
-																																				is_menu_enable = false;
-																																				is_on_touch = true;
-																																				
-																																				AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-																																				
-																																				GamePausePopup* t_popup = GamePausePopup::create(-300, [=]()
-																																																 {
-																																																	 is_menu_enable = true;
-																																																	 is_on_touch = false;
-																																																 }, [=]()
-																																																 {
-																																																	 onSizeMenu();
-																																																 });
-																																				addChild(t_popup, 999);
-																																			});
-																		pause_item->setPosition(ccp(n_pause->getContentSize().width/2.f, myDSH->ui_top - n_pause->getContentSize().height/2.f));
-																		
-																		CCMenuLambda* ui_menu = CCMenuLambda::create();
-																		ui_menu->setPosition(CCPointZero);
-																		addChild(ui_menu, 2);
-																		ui_menu->setTouchPriority(-200);
-																		
-																		ui_menu->addChild(pause_item);
+																		createPauseMenu();
 																		
 																		size_value = 3;
 																		initGame();
@@ -352,38 +315,7 @@ void PieceGame::onSizeMenu()
 																		
 																		is_menu_enable = false;
 																		
-																		CCSprite* n_pause = CCSprite::create("subapp_stop.png");
-																		CCSprite* s_pause = CCSprite::create("subapp_stop.png");
-																		s_pause->setColor(ccGRAY);
-																		
-																		CCMenuItemSpriteLambda* pause_item = CCMenuItemSpriteLambda::create(n_pause, s_pause, [=](CCObject* sender)
-																																			{
-																																				if(!is_menu_enable || is_on_touch)
-																																					return;
-																																				
-																																				is_menu_enable = false;
-																																				is_on_touch = true;
-																																				
-																																				AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-																																				
-																																				GamePausePopup* t_popup = GamePausePopup::create(-300, [=]()
-																																																 {
-																																																	 is_menu_enable = true;
-																																																	 is_on_touch = false;
-																																																 }, [=]()
-																																																 {
-																																																	 onSizeMenu();
-																																																 });
-																																				addChild(t_popup, 999);
-																																			});
-																		pause_item->setPosition(ccp(n_pause->getContentSize().width/2.f, myDSH->ui_top - n_pause->getContentSize().height/2.f));
-																		
-																		CCMenuLambda* ui_menu = CCMenuLambda::create();
-																		ui_menu->setPosition(CCPointZero);
-																		addChild(ui_menu, 2);
-																		ui_menu->setTouchPriority(-200);
-																		
-																		ui_menu->addChild(pause_item);
+																		createPauseMenu();
 																		
 																		size_value = 4;
 																		initGame();
@@ -436,14 +368,43 @@ void PieceGame::initGame()
 		mini_map = NULL;
 	}
 	
+	if(map_case)
+	{
+		map_case->removeFromParent();
+		map_case = NULL;
+	}
+	
+	if(img_case)
+	{
+		img_case->removeFromParent();
+		img_case = NULL;
+	}
+	
+	if(img_back)
+	{
+		img_back->removeFromParent();
+		img_back = NULL;
+	}
+	
 	for(int i=0;i<piece_list.size();i++)
 	{
 		piece_list[i]->CCLayer::onExit();
 	}
 	
+	img_back = CCSprite::create("subapp_frame_back.png");
+	img_back->setPosition(ccp(290,myDSH->ui_center_y));
+	img_back->setScaleX(380.f/img_back->getContentSize().width);
+	img_back->setScaleY(myDSH->ui_top/img_back->getContentSize().height);
+	addChild(img_back);
+	
+	img_case = CCScale9Sprite::create("subapp_frame.png", CCRectMake(0, 0, 360, 320), CCRectMake(6, 6, 348, 308));
+	img_case->setPosition(ccp(290,myDSH->ui_center_y));
+	img_case->setContentSize(CCSizeMake(380, myDSH->ui_top));
+	addChild(img_case);
+	
 	target_node->removeAllChildren();
 	target_node->setScale(430.f/320.f);
-	target_node->setPosition(ccp(480-160*target_node->getScale(),myDSH->ui_center_y));
+	target_node->setPosition(ccp(290,myDSH->ui_center_y));
 	t_controler->setZoomScale(1.f);
 	t_controler->setContentOffset(ccp(0,t_controler->minContainerOffset().y/2.f));
 	
@@ -460,7 +421,7 @@ void PieceGame::initGame()
 	}
 	else
 	{
-		t_texture = CCTextureCache::sharedTextureCache()->addImage(ccsf("default_img%d.png", rand()%5+1));
+		t_texture = CCTextureCache::sharedTextureCache()->addImage(ccsf("default_img%d.png", rand()%10+1));
 	}
 	
 	batch_node = CCSpriteBatchNode::createWithTexture(t_texture);
@@ -565,10 +526,14 @@ void PieceGame::initGame()
 	}
 	
 	mini_map = CCSprite::createWithTexture(t_texture);
-	mini_map->setScale(0.15f);
+	mini_map->setScale(0.28f);
 	mini_map->setAnchorPoint(ccp(0,0));
-	mini_map->setPosition(ccp(0, 0));
+	mini_map->setPosition(ccp(2, 5) + ccp(4,4));
 	addChild(mini_map);
+	
+	map_case = CCSprite::create("guide_frame.png");
+	map_case->setPosition(ccpFromSize(map_case->getContentSize()/2.f) + ccp(5,5));
+	addChild(map_case);
 	
 	t_controler->setZoomScale(myDSH->ui_top/(430.f * (430.f/320.f)));
 	target_node->setPositionY(myDSH->ui_center_y);
@@ -617,7 +582,7 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 	if(is_all_on)
 	{
 		is_on_touch = true;
-		KSLabelTTF* success_label = KSLabelTTF::create("성공!!", mySGD->getFont().c_str(), 35);
+		success_label = KSLabelTTF::create("성공!!", mySGD->getFont().c_str(), 35);
 		success_label->setColor(ccGREEN);
 		success_label->enableOuterStroke(ccBLACK, 1.f, 255, true);
 		success_label->setPosition(ccp(0,0));
@@ -639,12 +604,75 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 											   }, [=](float t_f)
 											   {
 												   success_label->setScale(t_f);
-												   addChild(KSTimer::create(0.5f, [=]()
-																   {
-																	   success_label->removeFromParent();
-																	   initGame();
-																   }));
+												   
+												   if(myDSH->is_linked)
+													{
+														// 통신해서 생명의 돌 줌
+														t_loading = LoadingLayer::create(-99999, true);
+														addChild(t_loading, 99999);
+														t_loading->startLoading();
+														
+														string ex_id;
+														if(size_value == 1)
+															ex_id = "diaryRewardLow";
+														else if(size_value == 2)
+															ex_id = "diaryRewardMid";
+														else if(size_value == 3)
+															ex_id = "diaryRewardHigh";
+														else if(size_value == 4)
+															ex_id = "diaryRewardTopHigh";
+														
+														mySGD->addChangeGoods(ex_id.c_str());
+														mySGD->changeGoods(json_selector(this, PieceGame::resultReward));
+													}
+												   else
+													{
+														addChild(KSTimer::create(0.5f, [=]()
+																				 {
+																					 success_label->removeFromParent();
+																					 initGame();
+																				 }));
+													}
 											   }));
+	}
+}
+
+void PieceGame::resultReward(Json::Value result_data)
+{
+	if(result_data["result"]["code"].asInt() == GDSUCCESS)
+	{
+		t_loading->removeFromParent();
+		
+		mySGD->network_check_cnt = 0;
+		
+		life_stone_count->setString(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)));
+		addChild(KSTimer::create(0.5f, [=]()
+								 {
+									 success_label->removeFromParent();
+									 initGame();
+								 }));
+	}
+	else
+	{
+		mySGD->network_check_cnt++;
+		
+		if(mySGD->network_check_cnt >= mySGD->max_network_check_cnt)
+		{
+			mySGD->network_check_cnt = 0;
+			
+			ASPopupView *alert = ASPopupView::getCommonNotiTag(-99999,myLoc->getLocalForKey(kMyLocalKey_reConnect), myLoc->getLocalForKey(kMyLocalKey_reConnectAlert4),[=](){
+				mySGD->changeGoods(json_selector(this, PieceGame::resultReward));
+			}, 1);
+			if(alert)
+				((CCNode*)CCDirector::sharedDirector()->getRunningScene()->getChildren()->objectAtIndex(0))->addChild(alert,999999);
+		}
+		else
+		{
+			addChild(KSTimer::create(0.5f, [=]()
+									 {
+										 mySGD->changeGoods(json_selector(this, PieceGame::resultReward));
+									 }));
+		}
 	}
 }
 
@@ -660,8 +688,8 @@ void PieceGame::scrollViewDidScroll(CCScrollView* view)
 void PieceGame::scrollViewDidZoom(CCScrollView* view)
 {
 	target_node->setScale(430.f/320.f * view->getZoomScale());
-	if(mini_map)
-		mini_map->setScale(0.15f/view->getZoomScale());
+//	if(mini_map)
+//		mini_map->setScale(0.2f/view->getZoomScale());
 	CCPoint oldPoint, min, max;
 	float newX, newY;
 	

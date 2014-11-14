@@ -19,7 +19,6 @@
 #include "EventPopup.h"
 #include "ServerDataSave.h"
 #include "ASPopupView.h"
-#include "NoticeContent.h"
 #include "TicketRequestContent.h"
 #include "PuzzleScene.h"
 #include "StageListDown.h"
@@ -53,6 +52,7 @@
 #include "TypingBox.h"
 #include "CollectionBookPopup.h"
 #include "SDiaryInformationPopup.h"
+#include "StyledLabelTTF.h"
 
 CCScene* MainFlowScene::scene()
 {
@@ -233,44 +233,13 @@ bool MainFlowScene::init()
 	back_img->setPosition(ccp(240,160));
 	addChild(back_img, kMainFlowZorder_back);
 	
-	CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
-	float screen_scale_x = screen_size.width/screen_size.height/1.5f;
-	if(screen_scale_x < 1.f)
-		screen_scale_x = 1.f;
-	
-	if(mySGD->getMustBeShowNotice())
-	{
-		ASPopupView* t_popup = ASPopupView::create(-9999999);
-		
-		float height_value = 320.f;
-		if(myDSH->screen_convert_rate < 1.f)
-			height_value = 320.f/myDSH->screen_convert_rate;
-		
-		if(height_value < myDSH->ui_top)
-			height_value = myDSH->ui_top;
-		
-		TRACE();
-		t_popup->setDimmedSize(CCSizeMake(screen_scale_x*480.f, height_value));// /myDSH->screen_convert_rate));
-		t_popup->setDimmedPosition(ccp(240, 160));
-		t_popup->setBasePosition(ccp(240, 160));
-		
-		TRACE();
-		NoticeContent* t_container = NoticeContent::create(t_popup->getTouchPriority(), [=](CCObject* sender)
-														   {
-															   TRACE();
-															   t_popup->removeFromParent();
-														   }, mySGD->getNoticeList());
-		t_popup->setContainerNode(t_container);
-		addChild(t_popup, kMainFlowZorder_popup+9999999);
-	}
-
-	if(myDSH->getIntegerForKey(kDSH_Key_exeCnt)%3 == 0)
-	{
-		SDiaryInformationPopup* t_popup = SDiaryInformationPopup::create(-999999, [=](){});
-		addChild(t_popup, kMainFlowZorder_popup+999999);
-	}
-	
-	myDSH->setIntegerForKey(kDSH_Key_exeCnt, myDSH->getIntegerForKey(kDSH_Key_exeCnt)+1);
+//	if(myDSH->getIntegerForKey(kDSH_Key_exeCnt)%3 == 0)
+//	{
+//		SDiaryInformationPopup* t_popup = SDiaryInformationPopup::create(-999999, [=](){});
+//		addChild(t_popup, kMainFlowZorder_popup+999999);
+//	}
+//	
+//	myDSH->setIntegerForKey(kDSH_Key_exeCnt, myDSH->getIntegerForKey(kDSH_Key_exeCnt)+1);
 	
 	
 //    TRACE();

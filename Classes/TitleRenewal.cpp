@@ -32,6 +32,9 @@
 #include "InterlockPopup.h"
 #include "EnterPasswordPopup.h"
 #include "PieceGame.h"
+#include "NoticeContent.h"
+#include "DiaryOptionPopup.h"
+#include "LinkPopup.h"
 
 CCScene* TitleRenewalScene::scene()
 {
@@ -455,6 +458,40 @@ void TitleRenewalScene::realInit()
 
 void TitleRenewalScene::setMain()
 {
+	if(myDSH->is_linked)
+	{
+		CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+		float screen_scale_x = screen_size.width/screen_size.height/1.5f;
+		if(screen_scale_x < 1.f)
+			screen_scale_x = 1.f;
+		
+		if(mySGD->getMustBeShowNotice())
+		{
+			ASPopupView* t_popup = ASPopupView::create(-9999999);
+			
+			float height_value = 320.f;
+			if(myDSH->screen_convert_rate < 1.f)
+				height_value = 320.f/myDSH->screen_convert_rate;
+			
+			if(height_value < myDSH->ui_top)
+				height_value = myDSH->ui_top;
+			
+			TRACE();
+			t_popup->setDimmedSize(CCSizeMake(screen_scale_x*480.f, height_value));// /myDSH->screen_convert_rate));
+			t_popup->setDimmedPosition(ccp(240, 160));
+			t_popup->setBasePosition(ccp(240, 160));
+			
+			TRACE();
+			NoticeContent* t_container = NoticeContent::create(t_popup->getTouchPriority(), [=](CCObject* sender)
+															   {
+																   TRACE();
+																   t_popup->removeFromParent();
+															   }, mySGD->getNoticeList());
+			t_popup->setContainerNode(t_container);
+			addChild(t_popup, kMainFlowZorder_popup+9999999);
+		}
+	}
+	
 	myDSH->setPuzzleMapSceneShowType(kPuzzleMapSceneShowType_stage);
 	
 	is_menu_enable = true;
@@ -476,56 +513,64 @@ void TitleRenewalScene::setMain()
 									}
 								  else
 									{
-										if(graphdog->isExistApp())
-										{
-											CCLOG("setup app");
-											// 게임이 설치 되어있다.
-											interlockCall();
-										}
-										else
-										{
-											CCLOG("not setup app");
-											// 미설치
-											setupCall();
-										}
+										LinkPopup* t_popup = LinkPopup::create(-999, [=]()
+																			   {
+																				   is_menu_enable = true;
+																			   }, [=]()
+																			   {
+																				   CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+																			   });
+										addChild(t_popup, 999);
+//										if(graphdog->isExistApp())
+//										{
+//											CCLOG("setup app");
+//											// 게임이 설치 되어있다.
+//											interlockCall();
+//										}
+//										else
+//										{
+//											CCLOG("not setup app");
+//											// 미설치
+//											setupCall();
+//										}
 									}
 							  });
 	diary_button->setPosition(ccp(80, 50));
 	addChild(diary_button, 999);
 	
-	// 상점
-	CommonButton* shop_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_shop), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
-	shop_button->setFunction([=](CCObject* sender)
-							 {
-								 if(!is_menu_enable)
-									 return;
-								 
-								 is_menu_enable = false;
-								 
-								 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
-								 
-								 if(myDSH->is_linked)
-									{
-										
-									}
-								 else
-									{
-										if(graphdog->isExistApp())
-										{
-											CCLOG("setup app");
-											// 게임이 설치 되어있다.
-											interlockCall();
-										}
-										else
-										{
-											CCLOG("not setup app");
-											// 미설치
-											setupCall();
-										}
-									}
-							 });
-	shop_button->setPosition(ccp(170, 50));
-	addChild(shop_button, 999);
+//	// 상점
+//	CommonButton* shop_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_shop), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
+//	shop_button->setFunction([=](CCObject* sender)
+//							 {
+//								 if(!is_menu_enable)
+//									 return;
+//								 
+//								 is_menu_enable = false;
+//								 
+//								 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+//								 
+//								 if(myDSH->is_linked)
+//									{
+//										
+//									}
+//								 else
+//									{
+//										if(graphdog->isExistApp())
+//										{
+//											CCLOG("setup app");
+//											// 게임이 설치 되어있다.
+//											interlockCall();
+//										}
+//										else
+//										{
+//											CCLOG("not setup app");
+//											// 미설치
+//											setupCall();
+//										}
+//									}
+//							 });
+//	shop_button->setPosition(ccp(170, 50));
+//	addChild(shop_button, 999);
 	
 	// 옵션
 	CommonButton* option_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_diaryOptionTitle), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
@@ -540,22 +585,34 @@ void TitleRenewalScene::setMain()
 								   
 								   if(myDSH->is_linked)
 								   {
-									   
+									   DiaryOptionPopup* t_popup = DiaryOptionPopup::create(-500, [=]()
+																							{
+																								is_menu_enable = true;
+																							});
+									   addChild(t_popup, 999);
 								   }
 								   else
 								   {
-									   if(graphdog->isExistApp())
-									   {
-										   CCLOG("setup app");
-										   // 게임이 설치 되어있다.
-										   interlockCall();
-									   }
-									   else
-									   {
-										   CCLOG("not setup app");
-										   // 미설치
-										   setupCall();
-									   }
+									   LinkPopup* t_popup = LinkPopup::create(-999, [=]()
+																			  {
+																				  is_menu_enable = true;
+																			  }, [=]()
+																			  {
+																				  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+																			  });
+									   addChild(t_popup, 999);
+//									   if(graphdog->isExistApp())
+//									   {
+//										   CCLOG("setup app");
+//										   // 게임이 설치 되어있다.
+//										   interlockCall();
+//									   }
+//									   else
+//									   {
+//										   CCLOG("not setup app");
+//										   // 미설치
+//										   setupCall();
+//									   }
 								   }
 							   });
 	option_button->setPosition(ccp(250, 50));
