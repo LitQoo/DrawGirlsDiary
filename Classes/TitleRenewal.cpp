@@ -615,7 +615,7 @@ void TitleRenewalScene::setMain()
 //									   }
 								   }
 							   });
-	option_button->setPosition(ccp(250, 50));
+	option_button->setPosition(ccp(200, 50));
 	addChild(option_button, 999);
 	
 	// 게임시작

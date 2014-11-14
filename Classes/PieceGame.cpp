@@ -133,7 +133,7 @@ bool PieceGame::init()
 	addChild(main_back);
 	
 	target_node = CCNode::create();
-	target_node->setScale(430.f/320.f);
+	target_node->setScale((430.f-14.f)/320.f);
 	addChild(target_node, 1);
 	
 	CCSprite* t_container = CCSprite::create("whitepaper2.png", CCRectMake(0, 0, 40, 430.f*target_node->getScale()));
@@ -403,7 +403,7 @@ void PieceGame::initGame()
 	addChild(img_case);
 	
 	target_node->removeAllChildren();
-	target_node->setScale(430.f/320.f);
+	target_node->setScale((430.f-14.f)/320.f);
 	target_node->setPosition(ccp(290,myDSH->ui_center_y));
 	t_controler->setZoomScale(1.f);
 	t_controler->setContentOffset(ccp(0,t_controler->minContainerOffset().y/2.f));
@@ -687,7 +687,7 @@ void PieceGame::scrollViewDidScroll(CCScrollView* view)
 }
 void PieceGame::scrollViewDidZoom(CCScrollView* view)
 {
-	target_node->setScale(430.f/320.f * view->getZoomScale());
+	target_node->setScale((430.f-14.f)/320.f * view->getZoomScale());
 //	if(mini_map)
 //		mini_map->setScale(0.2f/view->getZoomScale());
 	CCPoint oldPoint, min, max;

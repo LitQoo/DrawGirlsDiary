@@ -212,8 +212,7 @@ void LinkPopup::buttonAction(CCObject* sender, CCControlEvent t_event)
 
 void LinkPopup::resultLink(Json::Value result_data)
 {
-	CCLog("resultLink : %s", GraphDogLib::JsonObjectToString(result_data).c_str());
-	
+//	CCLog("resultLink : %s", GraphDogLib::JsonObjectToString(result_data).c_str());
 	if(result_data["result"]["code"].asInt() == GDSUCCESS)
 	{
 		mySGD->network_check_cnt = 0;
