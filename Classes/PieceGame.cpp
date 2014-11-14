@@ -526,13 +526,13 @@ void PieceGame::initGame()
 	}
 	
 	mini_map = CCSprite::createWithTexture(t_texture);
-	mini_map->setScale(0.28f);
+	mini_map->setScale(0.27f);
 	mini_map->setAnchorPoint(ccp(0,0));
-	mini_map->setPosition(ccp(2, 5) + ccp(4,4));
+	mini_map->setPosition(ccp(2, 4) + ccp(4,4));
 	addChild(mini_map);
 	
 	map_case = CCSprite::create("guide_frame.png");
-	map_case->setPosition(ccpFromSize(map_case->getContentSize()/2.f) + ccp(5,5));
+	map_case->setPosition(ccpFromSize(map_case->getContentSize()/2.f) + ccp(2,5));
 	addChild(map_case);
 	
 	t_controler->setZoomScale(myDSH->ui_top/(430.f * (430.f/320.f)));
