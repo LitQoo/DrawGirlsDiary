@@ -121,6 +121,8 @@ private:
 	void showPopup();
 	void endShowPopup();
 	void hidePopup();
+	void closePopup();
+	void endClosePopup();
 	void endHidePopup();
 	
 	CCPoint getContentPosition(int t_tag);

@@ -47,7 +47,7 @@ bool CardViewScene::init()
         return false;
     }
 	
-//	buy_morphing = nullptr;
+	buy_morphing = nullptr;
 	startFormSetter(this);
 	
 	
@@ -235,8 +235,8 @@ bool CardViewScene::init()
 		addChild(sound_menu, kCV_Z_next_button);
 		sound_menu->setEnabled(false);
 		
-//		if(buy_morphing)
-//			buy_morphing->removeFromParent();
+		if(buy_morphing)
+			buy_morphing->removeFromParent();
 		
 		morphing_img->removeFromParent();
 //		morphing_img = KS::loadCCBI<CCSprite*>(this, "morphing_heart_on.ccbi").first;
@@ -283,21 +283,21 @@ bool CardViewScene::init()
 										  
 										  CCLOG("11111111");
 										  
-										  DiaryLifeStone* t_popup = DiaryLifeStone::create(-200, [=](){
-											  is_actioned = false;
-										  });
-										  addChild(t_popup, 999);
-//										  BuyMorphingPopup* t_popup = BuyMorphingPopup::create(-200, [=](){
+//										  DiaryLifeStone* t_popup = DiaryLifeStone::create(-200, [=](){
 //											  is_actioned = false;
-//										  }, liveGirl);
+//										  });
 //										  addChild(t_popup, 999);
+										  BuyMorphingPopup* t_popup = BuyMorphingPopup::create(-200, [=](){
+											  is_actioned = false;
+										  }, liveGirl);
+										  addChild(t_popup, 999);
 									  }
 								  });
 		addChild(buy_morphing, kCV_Z_next_button);
 		buy_morphing->setEnabled(false);
 		buy_morphing->setVisible(false);
 		
-//		morphing_filename = "morphing_heart_off.ccbi";
+		morphing_filename = "morphing_heart_off.ccbi";
 	}
 	else
 	{
@@ -355,8 +355,8 @@ bool CardViewScene::init()
 	{
 		mySGD->is_morphing_noti = false;
 		
-//		BuyMorphingPopup* t_popup = BuyMorphingPopup::create(-200, [=](){is_actioned = false;}, liveGirl);
-//		addChild(t_popup, 999);
+		BuyMorphingPopup* t_popup = BuyMorphingPopup::create(-200, [=](){is_actioned = false;}, liveGirl);
+		addChild(t_popup, 999);
 	}
 	
 	
@@ -414,6 +414,13 @@ void CardViewScene::startTouchAction()
 	is_actioned = false;
 	setTouchEnabled(true);
 	next_button->setVisible(true);
+	
+	if(buy_morphing)
+	{
+		buy_morphing->setEnabled(true);
+		buy_morphing->setVisible(true);
+	}
+	
 	//	mode_button->setVisible(true);
 	
 	//	target_node->setTouchEnabled(true);

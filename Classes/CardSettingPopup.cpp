@@ -886,6 +886,49 @@ void CardSettingPopup::endHidePopup()
 	if(target_final)
 		(target_final->*delegate_final)();
 	
+//	CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+	removeFromParent();
+}
+
+void CardSettingPopup::closePopup()
+{
+	is_menu_enable = false;
+	
+	if(recent_sort_type == kCST_default)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetDefault, card_table->getContentOffset().y);
+	}
+	else if(recent_sort_type == kCST_take)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetTake, card_table->getContentOffset().y);
+	}
+	else if(recent_sort_type == kCST_takeReverse)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetTakeReverse, card_table->getContentOffset().y);
+	}
+	else if(recent_sort_type == kCST_gradeUp)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetGrade, card_table->getContentOffset().y);
+	}
+	else if(recent_sort_type == kCST_gradeDown)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetGradeReverse, card_table->getContentOffset().y);
+	}
+	else if(recent_sort_type == kCST_event)
+	{
+		myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetEvent, card_table->getContentOffset().y);
+	}
+	
+	CommonAnimation::closePopup(this, main_case, gray, [=](){
+		
+	}, bind(&CardSettingPopup::endClosePopup, this));
+}
+
+void CardSettingPopup::endClosePopup()
+{
+	if(target_final)
+		(target_final->*delegate_final)();
+	
 	CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
 //	removeFromParent();
 }
@@ -955,7 +998,8 @@ void CardSettingPopup::menuAction(CCObject* pSender)
 //			}
 			
 			target_final = NULL;
-			hidePopup();
+			closePopup();
+//			hidePopup();
 		}
 		else if(tag == kCSS_MT_gameapp)
 		{

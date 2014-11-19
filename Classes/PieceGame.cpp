@@ -36,17 +36,25 @@ void ZoomScrollView::myInit()
 PieceOne* PieceOne::createWithTexture(CCTexture2D* t_texture, CCRect t_rect)
 {
 	PieceOne* t_po = new PieceOne();
-	t_po->initWithTexture(t_texture, t_rect);
-	t_po->CCSprite::autorelease();
+	t_po->init();
+	t_po->myInit(t_texture, t_rect);
+	t_po->autorelease();
 	return t_po;
+}
+
+void PieceOne::myInit(CCTexture2D* t_texture, CCRect t_rect)
+{
+	cell_img = CCSprite::createWithTexture(t_texture, t_rect);
+	cell_img->setPosition(ccpFromSize(cell_img->getContentSize()/2.f));
+	addChild(cell_img);
 }
 
 bool PieceOne::isContainsPoint(CCPoint t_point)
 {
 	CCPoint touchLocation = t_point;
-	CCPoint local = CCSprite::convertToNodeSpace(touchLocation);
+	CCPoint local = convertToNodeSpace(touchLocation);
 	
-	CCRect t_rect = CCRectMake(0, 0, CCSprite::getContentSize().width, CCSprite::getContentSize().height);
+	CCRect t_rect = CCRectMake(0, 0, cell_img->getContentSize().width, cell_img->getContentSize().height);
 	return t_rect.containsPoint(local);
 }
 
@@ -55,19 +63,19 @@ bool PieceOne::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 	if(check_on_touch())
 		return false;
 	
-	before_touch_position = CCSprite::getPosition();
+	before_touch_position = getPosition();
 	CCPoint touchLocation = pTouch->getLocation();
 	touch_begin_point = touchLocation;
 	touch_move_point = touch_begin_point;
-	CCPoint local = CCSprite::convertToNodeSpace(touchLocation);
+	CCPoint local = convertToNodeSpace(touchLocation);
 	
-	CCRect t_rect = CCRectMake(0, 0, CCSprite::getContentSize().width, CCSprite::getContentSize().height);
+	CCRect t_rect = CCRectMake(0, 0, cell_img->getContentSize().width, cell_img->getContentSize().height);
 	if(t_rect.containsPoint(local))
 	{
-		setColor(ccGRAY);
-		CCSprite::getParent()->reorderChild((CCSprite*)this, 1);
+		cell_img->setColor(ccGRAY);
+		getParent()->reorderChild((CCSprite*)this, 1);
 		set_on_touch(true);
-		touch_light_func(CCSprite::getPosition(), false);
+		touch_light_func(getPosition(), false);
 		return true;
 	}
 	else
@@ -76,27 +84,27 @@ bool PieceOne::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 void PieceOne::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 {
 	CCPoint touchLocation = pTouch->getLocation();
-	CCSprite::setPosition(CCSprite::getPosition() + ccpMult(touchLocation - touch_move_point, 1.f/CCSprite::getParent()->getParent()->getScale()));
+	setPosition(getPosition() + ccpMult(touchLocation - touch_move_point, 1.f/getParent()->getScale()));
 	touch_move_point = touchLocation;
-	touch_light_func(CCSprite::getPosition(), false);
+	touch_light_func(getPosition(), false);
 }
 void PieceOne::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
-	setColor(ccWHITE);
-	CCSprite::getParent()->reorderChild((CCSprite*)this, 0);
+	cell_img->setColor(ccWHITE);
+	getParent()->reorderChild((CCSprite*)this, 0);
 	CCPoint touchLocation = pTouch->getLocation();
 	change_position(before_touch_position, touchLocation, this);
 	set_on_touch(false);
-	touch_light_func(CCSprite::getPosition(), true);
+	touch_light_func(getPosition(), true);
 }
 void PieceOne::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent)
 {
-	setColor(ccWHITE);
-	CCSprite::getParent()->reorderChild((CCSprite*)this, 0);
+	cell_img->setColor(ccWHITE);
+	getParent()->reorderChild((CCSprite*)this, 0);
 	CCPoint touchLocation = pTouch->getLocation();
 	change_position(before_touch_position, touchLocation, this);
 	set_on_touch(false);
-	touch_light_func(CCSprite::getPosition(), true);
+	touch_light_func(getPosition(), true);
 }
 
 void PieceOne::registerWithTouchDispatcher()
@@ -361,7 +369,7 @@ void PieceGame::touchLightCase(CCPoint t_position, bool is_end)
 	{
 		light_img = CCScale9Sprite::create("common_select.png", CCRectMake(0, 0, 34, 34), CCRectMake(16, 16, 2, 2));
 		light_img->setContentSize(light_size + CCSizeMake(10,10));
-		target_node->addChild(light_img);
+		target_node->addChild(light_img, 2);
 	}
 	
 	light_img->setPosition(t_position + ccpFromSize(light_size/2.f));
@@ -417,7 +425,7 @@ void PieceGame::initGame()
 	
 	CCTexture2D* t_texture;
 	
-	if(myDSH->is_linked)
+	if(myDSH->is_linked && mySGD->getHasGottenCardsSize() > 0)
 	{
 		int has_gotten_card_size = mySGD->getHasGottenCardsSize();
 		int random_value = rand()%has_gotten_card_size;
@@ -512,9 +520,9 @@ void PieceGame::initGame()
 			int pos_j = rand_list[i + j*width_cnt]/width_cnt;
 			
 			PieceOne* t_img = PieceOne::createWithTexture(t_texture, CCRectMake(horizen_width + i*box_size, 430 - (vertical_height+(j+1)*box_size), box_size, box_size));
-			t_img->CCSprite::setAnchorPoint(CCPointZero);
-			t_img->CCSprite::setPosition(ccp(-160 + horizen_width,-215 + vertical_height) + ccp(pos_i*box_size,pos_j*box_size));
-			batch_node->addChild((CCSprite*)t_img);
+			t_img->setAnchorPoint(CCPointZero);
+			t_img->setPosition(ccp(-160 + horizen_width,-215 + vertical_height) + ccp(pos_i*box_size,pos_j*box_size));
+			target_node->addChild((CCSprite*)t_img);
 			t_img->on_point = ccp(-160 + horizen_width,-215 + vertical_height) + ccp(i*box_size,j*box_size);
 			
 			t_img->change_position = bind(&PieceGame::changePosition, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -569,20 +577,20 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 		if(piece_list[i]->isContainsPoint(after_touch_point))
 		{
 			is_found = true;
-			touched_target->CCSprite::setPosition(piece_list[i]->CCSprite::getPosition());
-			piece_list[i]->CCSprite::setPosition(before_position);
+			touched_target->setPosition(piece_list[i]->getPosition());
+			piece_list[i]->setPosition(before_position);
 		}
 	}
 	
 	if(!is_found)
 	{
-		touched_target->CCSprite::setPosition(before_position);
+		touched_target->setPosition(before_position);
 	}
 	
 	bool is_all_on = true;
 	for(int i=0;is_all_on && i<piece_list.size();i++)
 	{
-		if(!piece_list[i]->CCSprite::getPosition().equals(piece_list[i]->on_point))
+		if(!piece_list[i]->getPosition().equals(piece_list[i]->on_point))
 			is_all_on = false;
 	}
 	

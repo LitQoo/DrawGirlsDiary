@@ -25,7 +25,7 @@ private:
 	void myInit();
 };
 
-class PieceOne : public CCSprite, public CCLayer
+class PieceOne : public CCLayer
 {
 public:
 	static PieceOne* createWithTexture(CCTexture2D* t_texture, CCRect t_rect);
@@ -42,6 +42,9 @@ private:
 	CCPoint touch_move_point;
 	CCPoint before_touch_position;
 	
+	CCSprite* cell_img;
+	
+	void myInit(CCTexture2D* t_texture, CCRect t_rect);
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
