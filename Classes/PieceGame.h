@@ -30,11 +30,14 @@ class PieceOne : public CCLayer
 public:
 	static PieceOne* createWithTexture(CCTexture2D* t_texture, CCRect t_rect);
 	function<void(CCPoint before_position, CCPoint after_touch_point, PieceOne* touched_target)> change_position;
+	function<PieceOne*(CCPoint after_touch_point, PieceOne*)> check_will_change_position;
 	function<bool()> check_on_touch;
 	function<void(bool)> set_on_touch;
 	function<void(CCPoint, bool)> touch_light_func;
 	bool isContainsPoint(CCPoint t_point);
 	CCPoint on_point;
+	void onGray();
+	void offGray();
 	
 private:
 	
@@ -43,6 +46,8 @@ private:
 	CCPoint before_touch_position;
 	
 	CCSprite* cell_img;
+	
+	PieceOne* will_change_target;
 	
 	void myInit(CCTexture2D* t_texture, CCRect t_rect);
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
@@ -65,6 +70,7 @@ public:
 	virtual void onEnterTransitionDidFinish();
 	
 	void changePosition(CCPoint before_position, CCPoint after_touch_point, PieceOne* touched_target);
+	PieceOne* checkWillChangeTarget(CCPoint after_touch_point, PieceOne* touched_target);
 	bool is_on_touch;
 	void touchLightCase(CCPoint t_position, bool is_end);
 	
@@ -74,7 +80,7 @@ private:
 	
 	LoadingLayer* t_loading;
 	KSLabelTTF* life_stone_count;
-	KSLabelTTF* success_label;
+	CCSprite* success_label;
 	
 	CCScale9Sprite* light_img;
 	CCSprite* mini_map;

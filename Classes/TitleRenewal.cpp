@@ -65,6 +65,9 @@ bool TitleRenewalScene::init()
 	
 	CCLOG("start init TitleRenewalScene");
 	
+	progress_timer = NULL;
+	state_label = NULL;
+	
 	TRACE();
 	is_preloaded_effect = false;
 	card_data_version = -1;
@@ -4020,6 +4023,17 @@ void TitleRenewalScene::endingCheck()
 	mySDS->fFlush(kSDS_GI_characterCount_i);
 	
 	is_loaded_server = true;
+	
+	if(progress_timer)
+	{
+		progress_timer->removeFromParent();
+		progress_timer = NULL;
+	}
+	if(state_label)
+	{
+		state_label->removeFromParent();
+		state_label = NULL;
+	}
 	
 	endingAction();
 }

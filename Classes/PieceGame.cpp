@@ -44,6 +44,8 @@ PieceOne* PieceOne::createWithTexture(CCTexture2D* t_texture, CCRect t_rect)
 
 void PieceOne::myInit(CCTexture2D* t_texture, CCRect t_rect)
 {
+	will_change_target = NULL;
+	
 	cell_img = CCSprite::createWithTexture(t_texture, t_rect);
 	cell_img->setPosition(ccpFromSize(cell_img->getContentSize()/2.f));
 	addChild(cell_img);
@@ -56,6 +58,15 @@ bool PieceOne::isContainsPoint(CCPoint t_point)
 	
 	CCRect t_rect = CCRectMake(0, 0, cell_img->getContentSize().width, cell_img->getContentSize().height);
 	return t_rect.containsPoint(local);
+}
+
+void PieceOne::onGray()
+{
+	cell_img->setColor(ccGRAY);
+}
+void PieceOne::offGray()
+{
+	cell_img->setColor(ccWHITE);
 }
 
 bool PieceOne::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
@@ -87,10 +98,28 @@ void PieceOne::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 	setPosition(getPosition() + ccpMult(touchLocation - touch_move_point, 1.f/getParent()->getScale()));
 	touch_move_point = touchLocation;
 	touch_light_func(getPosition(), false);
+	
+	PieceOne* t_target = check_will_change_position(touchLocation, this);
+	if(will_change_target)
+	{
+		will_change_target->offGray();
+	}
+	if(t_target)
+	{
+		will_change_target = t_target;
+		will_change_target->onGray();
+	}
 }
 void PieceOne::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
 	cell_img->setColor(ccWHITE);
+	
+	if(will_change_target)
+	{
+		will_change_target->offGray();
+		will_change_target = NULL;
+	}
+	
 	getParent()->reorderChild((CCSprite*)this, 0);
 	CCPoint touchLocation = pTouch->getLocation();
 	change_position(before_touch_position, touchLocation, this);
@@ -100,6 +129,13 @@ void PieceOne::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 void PieceOne::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent)
 {
 	cell_img->setColor(ccWHITE);
+	
+	if(will_change_target)
+	{
+		will_change_target->offGray();
+		will_change_target = NULL;
+	}
+	
 	getParent()->reorderChild((CCSprite*)this, 0);
 	CCPoint touchLocation = pTouch->getLocation();
 	change_position(before_touch_position, touchLocation, this);
@@ -535,6 +571,7 @@ void PieceGame::initGame()
 				this->is_on_touch = t_b;
 			};
 			t_img->touch_light_func = bind(&PieceGame::touchLightCase, this, std::placeholders::_1, std::placeholders::_2);
+			t_img->check_will_change_position = bind(&PieceGame::checkWillChangeTarget, this, std::placeholders::_1, std::placeholders::_2);
 			
 			piece_list.push_back(t_img);
 		}
@@ -564,6 +601,25 @@ void PieceGame::initGame()
 									 piece_list[i]->setTouchEnabled(true);
 								 }
 							 }));
+}
+
+PieceOne* PieceGame::checkWillChangeTarget(CCPoint after_touch_point, PieceOne* touched_target)
+{
+	bool is_found = false;
+	PieceOne* found_target = NULL;
+	for(int i=0;!is_found && i<piece_list.size();i++)
+	{
+		if(piece_list[i] == touched_target)
+			continue;
+		
+		if(piece_list[i]->isContainsPoint(after_touch_point))
+		{
+			is_found = true;
+			found_target = piece_list[i];
+		}
+	}
+	
+	return found_target;
 }
 
 void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_point, PieceOne* touched_target)
@@ -597,23 +653,20 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 	if(is_all_on)
 	{
 		is_on_touch = true;
-		success_label = KSLabelTTF::create("성공!!", mySGD->getFont().c_str(), 35);
-		success_label->setColor(ccGREEN);
-		success_label->enableOuterStroke(ccBLACK, 1.f, 255, true);
+		success_label = CCSprite::create("subapp_clear.png"); //KSLabelTTF::create("성공!!", mySGD->getFont().c_str(), 35);
 		success_label->setPosition(ccp(0,0));
-		success_label->setRotation(-15);
-		success_label->setScale(5.f);
+		success_label->setScale(4.f);
 		success_label->setOpacity(0);
 		target_node->addChild(success_label);
 		
-		addChild(KSGradualValue<int>::create(0, 255, 1.f, [=](int t_i)
+		success_label->addChild(KSGradualValue<int>::create(0, 255, 0.3f, [=](int t_i)
 											 {
 												 success_label->setOpacity(t_i);
 											 }, [=](int t_i)
 											 {
 												 success_label->setOpacity(t_i);
 											 }));
-		addChild(KSGradualValue<float>::create(5.f, 1.f, 1.f, [=](float t_f)
+		success_label->addChild(KSGradualValue<float>::create(4.f, 1.f, 0.3f, [=](float t_f)
 											   {
 												   success_label->setScale(t_f);
 											   }, [=](float t_f)
@@ -642,10 +695,25 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 													}
 												   else
 													{
-														addChild(KSTimer::create(0.5f, [=]()
+														success_label->addChild(KSTimer::create(0.5f, [=]()
 																				 {
-																					 success_label->removeFromParent();
-																					 initGame();
+																					 success_label->addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
+																														  {
+																															  success_label->setOpacity(t_i);
+																														  }, [=](int t_i)
+																														  {
+																															  success_label->setOpacity(t_i);
+																														  }));
+																					 
+																					 success_label->addChild(KSGradualValue<float>::create(1.f, 4.f, 0.3f, [=](float t_f)
+																																		   {
+																																			   success_label->setScale(t_f);
+																																		   }, [=](float t_f)
+																																		   {
+																																			   success_label->setScale(t_f);
+																																			   success_label->removeFromParent();
+																																			   initGame();
+																																		   }));
 																				 }));
 													}
 											   }));
@@ -661,10 +729,25 @@ void PieceGame::resultReward(Json::Value result_data)
 		mySGD->network_check_cnt = 0;
 		
 		life_stone_count->setString(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)));
-		addChild(KSTimer::create(0.5f, [=]()
+		success_label->addChild(KSTimer::create(0.5f, [=]()
 								 {
-									 success_label->removeFromParent();
-									 initGame();
+									 success_label->addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
+																						 {
+																							 success_label->setOpacity(t_i);
+																						 }, [=](int t_i)
+																						 {
+																							 success_label->setOpacity(t_i);
+																						 }));
+									 
+									 success_label->addChild(KSGradualValue<float>::create(1.f, 4.f, 0.3f, [=](float t_f)
+																						   {
+																							   success_label->setScale(t_f);
+																						   }, [=](float t_f)
+																						   {
+																							   success_label->setScale(t_f);
+																							   success_label->removeFromParent();
+																							   initGame();
+																						   }));
 								 }));
 	}
 	else
