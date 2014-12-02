@@ -173,6 +173,11 @@ private:
 	
 	Json::Value friendList;
 	
+	Json::Value card_data_list;
+	int card_data_write_frame;
+	vector<IntPoint> save_card_version_list;
+	void cardDataWrite();
+	
 	void resultLoadedCardData(Json::Value result_data);
 	vector<DownloadFile> card_download_list;
 //	vector<CopyFile> card_reduction_list;
