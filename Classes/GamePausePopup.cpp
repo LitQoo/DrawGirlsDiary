@@ -91,6 +91,10 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 	
 	t_menus->setTouchPriority(touch_priority);
 	
+	Json::Value reward_list;
+	Json::Reader t_reader;
+	t_reader.parse(mySGD->diary_reward_count, reward_list);
+	
 	{
 		CCSprite* n_level1_back = CCSprite::create("stop_level.png");
 		CCSprite* s_level1_back = CCSprite::create("stop_level.png");
@@ -133,7 +137,7 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
 			back_in->addChild(reward_label);
 			
-			KSLabelTTF* reward_count = KSLabelTTF::create("+1", mySGD->getFont().c_str(), 13);
+			KSLabelTTF* reward_count = KSLabelTTF::create(ccsf("+%d", reward_list[0].asInt()), mySGD->getFont().c_str(), 13);
 			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
 			reward_count->setAnchorPoint(ccp(0,0.5f));
 			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
@@ -183,7 +187,7 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
 			back_in->addChild(reward_label);
 			
-			KSLabelTTF* reward_count = KSLabelTTF::create("+3", mySGD->getFont().c_str(), 13);
+			KSLabelTTF* reward_count = KSLabelTTF::create(ccsf("+%d", reward_list[1].asInt()), mySGD->getFont().c_str(), 13);
 			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
 			reward_count->setAnchorPoint(ccp(0,0.5f));
 			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
@@ -233,7 +237,7 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
 			back_in->addChild(reward_label);
 			
-			KSLabelTTF* reward_count = KSLabelTTF::create("+5", mySGD->getFont().c_str(), 13);
+			KSLabelTTF* reward_count = KSLabelTTF::create(ccsf("+%d", reward_list[2].asInt()), mySGD->getFont().c_str(), 13);
 			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
 			reward_count->setAnchorPoint(ccp(0,0.5f));
 			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));
@@ -283,7 +287,7 @@ void GamePausePopup::myInit(int t_touch_priority, function<void()> t_end_func, f
 			reward_label->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,42));
 			back_in->addChild(reward_label);
 			
-			KSLabelTTF* reward_count = KSLabelTTF::create("+7", mySGD->getFont().c_str(), 13);
+			KSLabelTTF* reward_count = KSLabelTTF::create(ccsf("+%d", reward_list[3].asInt()), mySGD->getFont().c_str(), 13);
 			reward_count->enableOuterStroke(ccBLACK, 1, 255, true);
 			reward_count->setAnchorPoint(ccp(0,0.5f));
 			reward_count->setPosition(level1_item->getPosition() - ccpFromSize(n_level1_back->getContentSize()/2.f) + ccp(90,21));

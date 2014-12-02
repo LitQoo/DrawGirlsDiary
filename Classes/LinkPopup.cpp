@@ -229,6 +229,12 @@ void LinkPopup::resultLink(Json::Value result_data)
 		CommonAnimation::closePopup(this, m_container, gray, [=](){
 			
 		}, [=](){
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetDefault, 0);
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetTake, 0);
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetTakeReverse, 0);
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetGrade, 0);
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetGradeReverse, 0);
+			myDSH->setIntegerForKey(kDSH_Key_cardSettingTableOffsetEvent, 0);
 			success_func();
 			removeFromParent();
 		});

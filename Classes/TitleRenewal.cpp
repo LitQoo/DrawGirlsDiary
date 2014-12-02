@@ -67,6 +67,7 @@ bool TitleRenewalScene::init()
 	
 	progress_timer = NULL;
 	state_label = NULL;
+	download_state = NULL;
 	
 	TRACE();
 	is_preloaded_effect = false;
@@ -85,90 +86,122 @@ bool TitleRenewalScene::init()
 	white_back = NULL;
 	TRACE();
 	
-	if(myDSH->getPuzzleMapSceneShowType() == kPuzzleMapSceneShowType_init)
-	{
-		CCLOG("start splash");
-		
-		white_back = CCSprite::create("whitePaper.png");
-		CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
-		float screen_scale_x = screen_size.width/screen_size.height/1.5f;
-		if(screen_scale_x < 1.f)
-			screen_scale_x = 1.f;
-		
-		white_back->setScaleX(screen_scale_x);
-		white_back->setScaleY(myDSH->ui_top/320.f/myDSH->screen_convert_rate);
-		white_back->setPosition(ccp(240,160));
-		addChild(white_back);
-		
-		CCSprite* splash = CCSprite::create("splash_nhn_litqoo.png");
-		splash->setPosition(ccp(240,160));
-		addChild(splash);
-		TRACE();
-		
-		addChild(KSTimer::create(1.f, [=]()
-														 {TRACE();
-															 
-			addChild(KSGradualValue<float>::create(0.f, 1.f, 0.5f, [=](float t)
-																						 {TRACE();
-																							 
-													   splash->setOpacity(255-255*t);
-												   }, [=](float t)
-																						 {TRACE();
-																							 
-													   splash->setOpacity(255-255*t);
-													   splash->removeFromParent();
-													   
-													   CCSprite* marvelous_splash = CCSprite::create("splash_marvelous.png");
-													   marvelous_splash->setPosition(ccp(240,160));
-													   addChild(marvelous_splash);
-													   
-													   addChild(KSTimer::create(1.f, [=]()
-																											{TRACE();
-																												
-																					addChild(KSGradualValue<float>::create(0.f, 1.f, 0.5f, [=](float t)
-																																								 {TRACE();
-																																									 
-																															   marvelous_splash->setOpacity(255-255*t);
-																														   }, [=](float t)
-																																								 {TRACE();
-																																									 
-																															   marvelous_splash->setOpacity(255-255*t);
-																															   marvelous_splash->removeFromParent();
-																															   
-																															   CCSprite* base_back = CCSprite::create("main_back.png");
-																															   base_back->setPosition(ccp(240,160));
-																															   addChild(base_back);
-																																									 
-																															   endSplash();
-																														   }));
-																				}));
-												   }));
-		}));
-		
-//		auto splash = KS::loadCCBI<CCSprite*>(this, "splash_nhn.ccbi");
-//		splash.second->setAnimationCompletedCallbackLambda(this, [=](const char* seqName){
-//			splash.first->removeFromParent();
-//			endSplash();
-//		});
-//		splash.first->setPosition(ccp(240,160));
-//		
-//		addChild(splash.first);
-//		
-//		//	addChild(KSTimer::create(3.f, [=]()
-//		//	{
-//		splash.second->runAnimationsForSequenceNamed("Default Timeline");
-		//		//	}));
-		TRACE();
-	}
-	else
-	{
-		TRACE();
-		CCSprite* base_back = CCSprite::create("main_back.png");
-		base_back->setPosition(ccp(240,160));
-		addChild(base_back);
-		
-		endSplash();
-	}
+	CCSize t_screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+	float t_screen_scale_x = t_screen_size.width/t_screen_size.height/1.5f;
+	if(t_screen_scale_x < 1.f)
+		t_screen_scale_x = 1.f;
+	
+	CCSprite* ratings = CCSprite::create("game_ratings_19.png");
+	ratings->setAnchorPoint(ccp(1,1));
+	ratings->setPosition(ccp(240 + 240*t_screen_scale_x-10, 160 + 160*myDSH->ui_top/320.f/myDSH->screen_convert_rate-10));
+	addChild(ratings);
+	
+	StyledLabelTTF* rating_label = StyledLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_ratingScript), mySGD->getFont().c_str(), 22, 999, StyledAlignment::kCenterAlignment);
+	rating_label->setPosition(ccp(240,160));
+	addChild(rating_label);
+
+	addChild(KSTimer::create(3.f, [=]()
+							 {
+								 addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
+																	  {
+																		  ratings->setOpacity(t_i);
+																		  KS::setOpacity(rating_label, t_i);
+																	  }, [=](int t_i)
+																	  {
+																		  ratings->setOpacity(t_i);
+																		  KS::setOpacity(rating_label, t_i);
+																		  ratings->removeFromParent();
+																		  rating_label->removeFromParent();
+																		  
+																		  if(myDSH->getPuzzleMapSceneShowType() == kPuzzleMapSceneShowType_init)
+																		  {
+																			  CCLOG("start splash");
+																			  
+																			  white_back = CCSprite::create("whitePaper.png");
+																			  CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+																			  float screen_scale_x = screen_size.width/screen_size.height/1.5f;
+																			  if(screen_scale_x < 1.f)
+																				  screen_scale_x = 1.f;
+																			  
+																			  white_back->setScaleX(screen_scale_x);
+																			  white_back->setScaleY(myDSH->ui_top/320.f/myDSH->screen_convert_rate);
+																			  white_back->setPosition(ccp(240,160));
+																			  addChild(white_back);
+																			  
+																			  CCSprite* splash = CCSprite::create("splash_nhn_litqoo.png");
+																			  splash->setPosition(ccp(240,160));
+																			  addChild(splash);
+																			  TRACE();
+																			  
+																			  addChild(KSTimer::create(1.f, [=]()
+																									   {TRACE();
+																										   
+																										   addChild(KSGradualValue<float>::create(0.f, 1.f, 0.5f, [=](float t)
+																																				  {TRACE();
+																																					  
+																																					  splash->setOpacity(255-255*t);
+																																				  }, [=](float t)
+																																				  {TRACE();
+																																					  
+																																					  splash->setOpacity(255-255*t);
+																																					  splash->removeFromParent();
+																																					  
+																																					  CCSprite* marvelous_splash = CCSprite::create("splash_marvelous.png");
+																																					  marvelous_splash->setPosition(ccp(240,160));
+																																					  addChild(marvelous_splash);
+																																					  
+																																					  addChild(KSTimer::create(1.f, [=]()
+																																											   {TRACE();
+																																												   
+																																												   addChild(KSGradualValue<float>::create(0.f, 1.f, 0.5f, [=](float t)
+																																																						  {TRACE();
+																																																							  
+																																																							  marvelous_splash->setOpacity(255-255*t);
+																																																						  }, [=](float t)
+																																																						  {TRACE();
+																																																							  
+																																																							  marvelous_splash->setOpacity(255-255*t);
+																																																							  marvelous_splash->removeFromParent();
+																																																							  
+																																																							  CCSprite* base_back = CCSprite::create("main_back.png");
+																																																							  base_back->setPosition(ccp(240,160));
+																																																							  addChild(base_back);
+																																																							  
+																																																							  endSplash();
+																																																						  }));
+																																											   }));
+																																				  }));
+																									   }));
+																			  
+																			  //		auto splash = KS::loadCCBI<CCSprite*>(this, "splash_nhn.ccbi");
+																			  //		splash.second->setAnimationCompletedCallbackLambda(this, [=](const char* seqName){
+																			  //			splash.first->removeFromParent();
+																			  //			endSplash();
+																			  //		});
+																			  //		splash.first->setPosition(ccp(240,160));
+																			  //		
+																			  //		addChild(splash.first);
+																			  //		
+																			  //		//	addChild(KSTimer::create(3.f, [=]()
+																			  //		//	{
+																			  //		splash.second->runAnimationsForSequenceNamed("Default Timeline");
+																			  //		//	}));
+																			  TRACE();
+																		  }
+																		  else
+																		  {
+																			  TRACE();
+																			  CCSprite* base_back = CCSprite::create("main_back.png");
+																			  base_back->setPosition(ccp(240,160));
+																			  addChild(base_back);
+																			  
+																			  endSplash();
+																		  }
+																	  }));
+							 }));
+	
+	
+	
 	
 //	vector<string> preload_list;
 //	preload_list.clear();
@@ -275,10 +308,10 @@ void TitleRenewalScene::endSplash()
 	if(myDSH->ui_top > 320)
 		convert_position.y = (myDSH->ui_top - 320)/2.f;
 	
-	//CCSprite* ratings = CCSprite::create("game_ratings_19.png");
-	//ratings->setAnchorPoint(ccp(1,1));
-	//ratings->setPosition(ccpFromSize(title_img->getContentSize()/2.f) + ccp(240-10, 160-10) + convert_position);
-	//title_img->addChild(ratings);
+//	CCSprite* ratings = CCSprite::create("game_ratings_19.png");
+//	ratings->setAnchorPoint(ccp(1,1));
+//	ratings->setPosition(ccpFromSize(title_img->getContentSize()/2.f) + ccp(240-10, 160-10) + convert_position);
+//	title_img->addChild(ratings);
 	
 	state_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_connectingServer), mySGD->getFont().c_str(), 15, CCSizeMake(350, 80), kCCTextAlignmentCenter, kCCVerticalTextAlignmentCenter);
 	state_label->enableOuterStroke(ccBLACK, 1.f);
@@ -1519,6 +1552,8 @@ void TitleRenewalScene::resultGetCommonSetting(Json::Value result_data)
 		mySGD->setSendPvpPlayDataRate(result_data["sendPvpPlayDataRate"].asInt());
 		
 		mySGD->setGameDownUrl(result_data["appDownUrls"]["game"].asString());
+		
+		mySGD->diary_reward_count = result_data["diaryRewardCount"].asString();
 	}
 	else
 	{
@@ -4033,6 +4068,11 @@ void TitleRenewalScene::endingCheck()
 	{
 		state_label->removeFromParent();
 		state_label = NULL;
+	}
+	if(download_state)
+	{
+		download_state->removeFromParent();
+		download_state = NULL;
 	}
 	
 	endingAction();

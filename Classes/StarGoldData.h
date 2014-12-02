@@ -977,6 +977,8 @@ public:
 	void setGameDownUrl(string t_str);
 	string getGameDownUrl();
 	
+	string diary_reward_count;
+	
 private:
 	
 	vector<CollectionCardInfo> normal_puzzle_cards;

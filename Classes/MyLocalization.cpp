@@ -651,7 +651,7 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("사용하기"), kMyLocalKey_buyMorphingBuy);
 	
 	ko->setObject(CCString::create("생명의 돌이 부족합니다."), kMyLocalKey_notEnoughtMorphingTitle);
-	ko->setObject(CCString::create("<font newline=18>생명의 돌은 PVP 및 각종 이벤트에서<font newline=18>보상으로 얻을 수 있습니다."), kMyLocalKey_notEnoughtMorphingContent);
+	ko->setObject(CCString::create("<font newline=18>생명의 돌은 미니게임에서<font newline=18>보상으로 얻을 수 있습니다."), kMyLocalKey_notEnoughtMorphingContent);
 	
 	ko->setObject(CCString::create("쿠폰등록"), kMyLocalKey_couponTitle);
 	ko->setObject(CCString::create("입력"), kMyLocalKey_couponContent);
@@ -1124,6 +1124,7 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("연동코드를 입력해주세요."), kMyLocalKey_pleaseInputLinkCode);
 	ko->setObject(CCString::create("메뉴"), kMyLocalKey_menu);
 	ko->setObject(CCString::create("연동 해제"), kMyLocalKey_linkRelease);
+	ko->setObject(CCString::create("<font newline=32>이 게임물은 청소년이용불가 게임물로</font><font>18세 미만의 청소년은 이용할 수 없습니다.</font>"), kMyLocalKey_ratingScript);
 	
 	setObject(ko, "ko");
 }

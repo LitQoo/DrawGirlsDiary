@@ -1235,6 +1235,8 @@ CCTableViewCell* CardSettingPopup::tableCellAtIndex( CCTableView *table, unsigne
 {
 	CCTableViewCell* cell = table->dequeueCell();
 	
+	cell = NULL;
+	
 	cell = new CCTableViewCell();
 	cell->init();
 	cell->autorelease();
