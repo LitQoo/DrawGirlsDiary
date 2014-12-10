@@ -86,36 +86,38 @@ bool TitleRenewalScene::init()
 	white_back = NULL;
 	TRACE();
 	
-	CCSize t_screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
-	float t_screen_scale_x = t_screen_size.width/t_screen_size.height/1.5f;
-	if(t_screen_scale_x < 1.f)
-		t_screen_scale_x = 1.f;
 	
-	CCSprite* ratings = CCSprite::create("game_ratings_19.png");
-	ratings->setAnchorPoint(ccp(1,1));
-	ratings->setPosition(ccp(240 + 240*t_screen_scale_x-10, 160 + 160*myDSH->ui_top/320.f/myDSH->screen_convert_rate-10));
-	addChild(ratings);
-	
-	StyledLabelTTF* rating_label = StyledLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_ratingScript), mySGD->getFont().c_str(), 22, 999, StyledAlignment::kCenterAlignment);
-	rating_label->setPosition(ccp(240,160));
-	addChild(rating_label);
-
-	addChild(KSTimer::create(3.f, [=]()
-							 {
-								 addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
-																	  {
-																		  ratings->setOpacity(t_i);
-																		  KS::setOpacity(rating_label, t_i);
-																	  }, [=](int t_i)
-																	  {
-																		  ratings->setOpacity(t_i);
-																		  KS::setOpacity(rating_label, t_i);
-																		  ratings->removeFromParent();
-																		  rating_label->removeFromParent();
 																		  
-																		  if(myDSH->getPuzzleMapSceneShowType() == kPuzzleMapSceneShowType_init)
+	if(myDSH->getPuzzleMapSceneShowType() == kPuzzleMapSceneShowType_init)
+	{
+		CCLOG("start splash");
+		
+		CCSize t_screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+		float t_screen_scale_x = t_screen_size.width/t_screen_size.height/1.5f;
+		if(t_screen_scale_x < 1.f)
+			t_screen_scale_x = 1.f;
+		
+		CCSprite* ratings = CCSprite::create("game_ratings_19.png");
+		ratings->setAnchorPoint(ccp(1,1));
+		ratings->setPosition(ccp(240 + 240*t_screen_scale_x-10, 160 + 160*myDSH->ui_top/320.f/myDSH->screen_convert_rate-10));
+		addChild(ratings);
+		
+		StyledLabelTTF* rating_label = StyledLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_ratingScript), mySGD->getFont().c_str(), 22, 999, StyledAlignment::kCenterAlignment);
+		rating_label->setPosition(ccp(240,160));
+		addChild(rating_label);
+		
+		addChild(KSTimer::create(3.f, [=]()
+								 {
+									 addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
 																		  {
-																			  CCLOG("start splash");
+																			  ratings->setOpacity(t_i);
+																			  KS::setOpacity(rating_label, t_i);
+																		  }, [=](int t_i)
+																		  {
+																			  ratings->setOpacity(t_i);
+																			  KS::setOpacity(rating_label, t_i);
+																			  ratings->removeFromParent();
+																			  rating_label->removeFromParent();
 																			  
 																			  white_back = CCSprite::create("whitePaper.png");
 																			  CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
@@ -172,48 +174,48 @@ bool TitleRenewalScene::init()
 																																											   }));
 																																				  }));
 																									   }));
-																			  
-																			  //		auto splash = KS::loadCCBI<CCSprite*>(this, "splash_nhn.ccbi");
-																			  //		splash.second->setAnimationCompletedCallbackLambda(this, [=](const char* seqName){
-																			  //			splash.first->removeFromParent();
-																			  //			endSplash();
-																			  //		});
-																			  //		splash.first->setPosition(ccp(240,160));
-																			  //		
-																			  //		addChild(splash.first);
-																			  //		
-																			  //		//	addChild(KSTimer::create(3.f, [=]()
-																			  //		//	{
-																			  //		splash.second->runAnimationsForSequenceNamed("Default Timeline");
-																			  //		//	}));
-																			  TRACE();
-																		  }
-																		  else
-																		  {
-																			  TRACE();
-																			  CCSprite* base_back = CCSprite::create("main_back.png");
-																			  base_back->setPosition(ccp(240,160));
-																			  addChild(base_back);
-																			  
-																			  endSplash();
-																		  }
-																	  }));
-							 }));
+																		  }));
+								 }));
+		
+		//		auto splash = KS::loadCCBI<CCSprite*>(this, "splash_nhn.ccbi");
+		//		splash.second->setAnimationCompletedCallbackLambda(this, [=](const char* seqName){
+		//			splash.first->removeFromParent();
+		//			endSplash();
+		//		});
+		//		splash.first->setPosition(ccp(240,160));
+		//
+		//		addChild(splash.first);
+		//
+		//		//	addChild(KSTimer::create(3.f, [=]()
+		//		//	{
+		//		splash.second->runAnimationsForSequenceNamed("Default Timeline");
+		//		//	}));
+		TRACE();
+	}
+	else
+	{
+		TRACE();
+		CCSprite* base_back = CCSprite::create("main_back.png");
+		base_back->setPosition(ccp(240,160));
+		addChild(base_back);
+		
+		endSplash();
+	}
 	
 	
 	
 	
 //	vector<string> preload_list;
 //	preload_list.clear();
-//	
+//
 //	for(int i=0;i<=26;i++)
 //		preload_list.push_back(CCString::createWithFormat("TOAST_GalaxyS3_cropA_%05d.png", i)->getCString());
 //	preload_list.push_back("TOAST_GalaxyS3_typeA_1280x720_all.png");
 //	preload_list.push_back("TOAST_GalaxyS3_typeA_1280x720_BG.png");
-//	
+//
 //	splash_load_cnt = preload_list.size();
 //	splash_ing_cnt = 0;
-//	
+//
 //	for(int i=0;i<splash_load_cnt;i++)
 //		CCTextureCache::sharedTextureCache()->addImageAsync(preload_list[i].c_str(), this, callfuncO_selector(TitleRenewalScene::loadCounting));
 	
@@ -2459,251 +2461,257 @@ void TitleRenewalScene::cardDataWrite()
 	int i = card_data_write_frame;
 	
 	Json::Value t_card = cards[i];
-	
-	NSDS_SI(kSDS_GI_serial_int1_cardNumber_i, t_card["serial"].asInt(), t_card["no"].asInt());
-	NSDS_SI(kSDS_CI_int1_serial_i, t_card["no"].asInt(), t_card["serial"].asInt(), false);
-	save_card_version_list.push_back(IntPoint(t_card["no"].asInt(), t_card["version"].asInt()));
-//	NSDS_SI(kSDS_CI_int1_version_i, t_card["no"].asInt(), t_card["version"].asInt(), false);
-	NSDS_SI(kSDS_CI_int1_rank_i, t_card["no"].asInt(), t_card["rank"].asInt(), false);
-	NSDS_SI(kSDS_CI_int1_grade_i, t_card["no"].asInt(), t_card["grade"].asInt(), false);
-	//			NSDS_SI(kSDS_CI_int1_durability_i, t_card["no"].asInt(), t_card["durability"].asInt(), false);
-	//			NSDS_SI(kSDS_CI_int1_reward_i, t_card["no"].asInt(), t_card["reward"].asInt(), false);
-	
-	//			NSDS_SI(kSDS_CI_int1_theme_i, t_card["no"].asInt(), 1, false);
-	NSDS_SI(kSDS_CI_int1_stage_i, t_card["no"].asInt(), t_card["piece"].asInt(), false);
-	
-	//			if(t_card["piece"].asInt() == 0 || t_card["grade"].asInt() == 0 || t_card["no"].asInt() == 0)
-	//			{
-	//				CCLOG("piece : %d | grade : %d | card : %d", t_card["piece"].asInt(), t_card["grade"].asInt(), t_card["no"].asInt());
-	//			}
-	
-	NSDS_SI(t_card["piece"].asInt(), kSDS_SI_level_int1_card_i, t_card["grade"].asInt(), t_card["no"].asInt());
-	
-	//			Json::Value t_card_missile = t_card["missile"];
-	//			NSDS_SS(kSDS_CI_int1_missile_type_s, t_card["no"].asInt(), t_card_missile["type"].asString().c_str(), false);
-	//			NSDS_SI(kSDS_CI_int1_missile_power_i, t_card["no"].asInt(), t_card_missile["power"].asInt(), false);
-	//			NSDS_SI(kSDS_CI_int1_missile_dex_i, t_card["no"].asInt(), t_card_missile["dex"].asInt(), false);
-	//			NSDS_SD(kSDS_CI_int1_missile_speed_d, t_card["no"].asInt(), t_card_missile["speed"].asDouble(), false);
-	//
-	//			NSDS_SS(kSDS_CI_int1_passive_s, t_card["no"].asInt(), t_card["passive"].asString().c_str(), false);
-	//
-	//			Json::Value t_ability = t_card["ability"];
-	//			NSDS_SI(kSDS_CI_int1_abilityCnt_i, t_card["no"].asInt(), int(t_ability.size()), false);
-	//			for(int j=0;j<t_ability.size();j++)
-	//			{
-	//				Json::Value t_abil = t_ability[j];
-	//				NSDS_SI(kSDS_CI_int1_ability_int2_type_i, t_card["no"].asInt(), t_abil["type"].asInt(), t_abil["type"].asInt(), false);
-	//
-	//				Json::Value t_option;
-	//				if(!t_abil["option"].isObject())                    t_option["key"]="value";
-	//				else												t_option =t_abil["option"];
-	//
-	//				if(t_abil["type"].asInt() == kIC_attack)
-	//					NSDS_SI(kSDS_CI_int1_abilityAttackOptionPower_i, t_card["no"].asInt(), t_option["power"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_addTime)
-	//					NSDS_SI(kSDS_CI_int1_abilityAddTimeOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_fast)
-	//					NSDS_SI(kSDS_CI_int1_abilityFastOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_silence)
-	//					NSDS_SI(kSDS_CI_int1_abilitySilenceOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_doubleItem)
-	//					NSDS_SI(kSDS_CI_int1_abilityDoubleItemOptionPercent_i, t_card["no"].asInt(), t_option["percent"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_longTime)
-	//					NSDS_SI(kSDS_CI_int1_abilityLongTimeOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
-	//				else if(t_abil["type"].asInt() == kIC_baseSpeedUp)
-	//					NSDS_SI(kSDS_CI_int1_abilityBaseSpeedUpOptionUnit_i, t_card["no"].asInt(), t_option["unit"].asInt(), false);
-	//			}
-	
-	bool is_have_adult = t_card["haveAdult"].asBool();
-	NSDS_SB(kSDS_CI_int1_haveAdult_b, t_card["no"].asInt(), is_have_adult, false);
-	
-	string img_info_key, sil_info_key, face_info_key;
-	if(is_have_adult)
+	if(NSDS_GI(kSDS_CI_int1_version_i, t_card["no"].asInt()) < t_card["version"].asInt())
 	{
-		img_info_key = "adultImgInfo";
-		sil_info_key = "adultSilImgInfo";
-		face_info_key = "adultFaceInfo";
-	}
-	else
-	{
-		img_info_key = "imgInfo";
-		sil_info_key = "silImgInfo";
-		face_info_key = "faceInfo";
-	}
-	
-	Json::Value t_imgInfo = t_card[img_info_key.c_str()];
-	if(is_have_adult && (t_imgInfo.isNull() || t_imgInfo.empty()))
-	{
-		t_imgInfo = t_card["imgInfo"];
-	}
-	
-	//			bool is_add_cf = false;
-	
-	if(NSDS_GS(kSDS_CI_int1_imgInfo_s, t_card["no"].asInt()) != t_imgInfo["img"].asString())
-	{
-		// check, after download ----------
-		DownloadFile t_df;
-		t_df.size = t_imgInfo["size"].asInt();
-		t_df.img = t_imgInfo["img"].asString().c_str();
-		t_df.filename = CCSTR_CWF("card%d_visible.png", t_card["no"].asInt())->getCString();
-		t_df.key = CCSTR_CWF("%d_imgInfo", t_card["no"].asInt())->getCString();
+		NSDS_SI(kSDS_GI_serial_int1_cardNumber_i, t_card["serial"].asInt(), t_card["no"].asInt());
+		NSDS_SI(kSDS_CI_int1_serial_i, t_card["no"].asInt(), t_card["serial"].asInt(), false);
+		save_card_version_list.push_back(IntPoint(t_card["no"].asInt(), t_card["version"].asInt()));
+		//	NSDS_SI(kSDS_CI_int1_version_i, t_card["no"].asInt(), t_card["version"].asInt(), false);
+		NSDS_SI(kSDS_CI_int1_rank_i, t_card["no"].asInt(), t_card["rank"].asInt(), false);
+		NSDS_SI(kSDS_CI_int1_grade_i, t_card["no"].asInt(), t_card["grade"].asInt(), false);
+		//			NSDS_SI(kSDS_CI_int1_durability_i, t_card["no"].asInt(), t_card["durability"].asInt(), false);
+		//			NSDS_SI(kSDS_CI_int1_reward_i, t_card["no"].asInt(), t_card["reward"].asInt(), false);
 		
-		auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
-		if(iter == card_download_list.end())
+		//			NSDS_SI(kSDS_CI_int1_theme_i, t_card["no"].asInt(), 1, false);
+		NSDS_SI(kSDS_CI_int1_stage_i, t_card["no"].asInt(), t_card["piece"].asInt(), false);
+		
+		//			if(t_card["piece"].asInt() == 0 || t_card["grade"].asInt() == 0 || t_card["no"].asInt() == 0)
+		//			{
+		//				CCLOG("piece : %d | grade : %d | card : %d", t_card["piece"].asInt(), t_card["grade"].asInt(), t_card["no"].asInt());
+		//			}
+		
+		NSDS_SI(t_card["piece"].asInt(), kSDS_SI_level_int1_card_i, t_card["grade"].asInt(), t_card["no"].asInt());
+		
+		//			Json::Value t_card_missile = t_card["missile"];
+		//			NSDS_SS(kSDS_CI_int1_missile_type_s, t_card["no"].asInt(), t_card_missile["type"].asString().c_str(), false);
+		//			NSDS_SI(kSDS_CI_int1_missile_power_i, t_card["no"].asInt(), t_card_missile["power"].asInt(), false);
+		//			NSDS_SI(kSDS_CI_int1_missile_dex_i, t_card["no"].asInt(), t_card_missile["dex"].asInt(), false);
+		//			NSDS_SD(kSDS_CI_int1_missile_speed_d, t_card["no"].asInt(), t_card_missile["speed"].asDouble(), false);
+		//
+		//			NSDS_SS(kSDS_CI_int1_passive_s, t_card["no"].asInt(), t_card["passive"].asString().c_str(), false);
+		//
+		//			Json::Value t_ability = t_card["ability"];
+		//			NSDS_SI(kSDS_CI_int1_abilityCnt_i, t_card["no"].asInt(), int(t_ability.size()), false);
+		//			for(int j=0;j<t_ability.size();j++)
+		//			{
+		//				Json::Value t_abil = t_ability[j];
+		//				NSDS_SI(kSDS_CI_int1_ability_int2_type_i, t_card["no"].asInt(), t_abil["type"].asInt(), t_abil["type"].asInt(), false);
+		//
+		//				Json::Value t_option;
+		//				if(!t_abil["option"].isObject())                    t_option["key"]="value";
+		//				else												t_option =t_abil["option"];
+		//
+		//				if(t_abil["type"].asInt() == kIC_attack)
+		//					NSDS_SI(kSDS_CI_int1_abilityAttackOptionPower_i, t_card["no"].asInt(), t_option["power"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_addTime)
+		//					NSDS_SI(kSDS_CI_int1_abilityAddTimeOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_fast)
+		//					NSDS_SI(kSDS_CI_int1_abilityFastOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_silence)
+		//					NSDS_SI(kSDS_CI_int1_abilitySilenceOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_doubleItem)
+		//					NSDS_SI(kSDS_CI_int1_abilityDoubleItemOptionPercent_i, t_card["no"].asInt(), t_option["percent"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_longTime)
+		//					NSDS_SI(kSDS_CI_int1_abilityLongTimeOptionSec_i, t_card["no"].asInt(), t_option["sec"].asInt(), false);
+		//				else if(t_abil["type"].asInt() == kIC_baseSpeedUp)
+		//					NSDS_SI(kSDS_CI_int1_abilityBaseSpeedUpOptionUnit_i, t_card["no"].asInt(), t_option["unit"].asInt(), false);
+		//			}
+		
+		bool is_have_adult = t_card["haveAdult"].asBool();
+		NSDS_SB(kSDS_CI_int1_haveAdult_b, t_card["no"].asInt(), is_have_adult, false);
+		
+		string img_info_key, sil_info_key, face_info_key;
+		if(is_have_adult)
 		{
-			card_download_list.push_back(t_df);
-			// ================================
+			img_info_key = "adultImgInfo";
+			sil_info_key = "adultSilImgInfo";
+			face_info_key = "adultFaceInfo";
+		}
+		else
+		{
+			img_info_key = "imgInfo";
+			sil_info_key = "silImgInfo";
+			face_info_key = "faceInfo";
+		}
+		
+		Json::Value t_imgInfo = t_card[img_info_key.c_str()];
+		if(is_have_adult && (t_imgInfo.isNull() || t_imgInfo.empty()))
+		{
+			t_imgInfo = t_card["imgInfo"];
+		}
+		
+		//			bool is_add_cf = false;
+		
+		if(NSDS_GS(kSDS_CI_int1_imgInfo_s, t_card["no"].asInt()) != t_imgInfo["img"].asString())
+		{
+			// check, after download ----------
+			DownloadFile t_df;
+			t_df.size = t_imgInfo["size"].asInt();
+			t_df.img = t_imgInfo["img"].asString().c_str();
+			t_df.filename = CCSTR_CWF("card%d_visible.png", t_card["no"].asInt())->getCString();
+			t_df.key = CCSTR_CWF("%d_imgInfo", t_card["no"].asInt())->getCString();
 			
+			auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
+			if(iter == card_download_list.end())
+			{
+				card_download_list.push_back(t_df);
+				// ================================
+				
+				//					CopyFile t_cf;
+				//					t_cf.from_filename = t_df.filename.c_str();
+				//					t_cf.to_filename = CCSTR_CWF("card%d_thumbnail.png", t_card["no"].asInt())->getCString();
+				//					card_reduction_list.push_back(t_cf);
+				//
+				//					is_add_cf = true;
+			}
+		}
+		
+		Json::Value t_aniInfo = t_card["aniInfo"];
+		NSDS_SB(kSDS_CI_int1_aniInfoIsAni_b, t_card["no"].asInt(), t_aniInfo["isAni"].asBool(), false);
+		if(t_aniInfo["isAni"].asBool())
+		{
+			Json::Value t_detail = t_aniInfo["detail"];
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailLoopLength_i, t_card["no"].asInt(), t_detail["loopLength"].asInt(), false);
+			
+			Json::Value t_loopSeq = t_detail["loopSeq"];
+			for(int j=0;j<t_loopSeq.size();j++)
+				NSDS_SI(kSDS_CI_int1_aniInfoDetailLoopSeq_int2_i, t_card["no"].asInt(), j, t_loopSeq[j].asInt(), false);
+			
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailCutWidth_i, t_card["no"].asInt(), t_detail["cutWidth"].asInt(), false);
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailCutHeight_i, t_card["no"].asInt(), t_detail["cutHeight"].asInt(), false);
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailCutLength_i, t_card["no"].asInt(), t_detail["cutLength"].asInt(), false);
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailPositionX_i, t_card["no"].asInt(), t_detail["positionX"].asInt(), false);
+			NSDS_SI(kSDS_CI_int1_aniInfoDetailPositionY_i, t_card["no"].asInt(), t_detail["positionY"].asInt(), false);
+			
+			if(NSDS_GS(kSDS_CI_int1_aniInfoDetailImg_s, t_card["no"].asInt()) != t_detail["img"].asString())
+			{
+				// check, after download ----------
+				DownloadFile t_df;
+				t_df.size = t_detail["size"].asInt();
+				t_df.img = t_detail["img"].asString().c_str();
+				t_df.filename = CCSTR_CWF("card%d_animation.png", t_card["no"].asInt())->getCString();
+				t_df.key = CCSTR_CWF("%d_aniInfo_detail_img", t_card["no"].asInt())->getCString();
+				
+				auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
+				if(iter == card_download_list.end())
+					card_download_list.push_back(t_df);
+				// ================================
+			}
+			
+			//				if(is_add_cf)
+			//				{
+			//					CopyFile t_cf = card_reduction_list.back();
+			//					card_reduction_list.pop_back();
+			//					t_cf.is_ani = true;
+			//					t_cf.cut_width = t_detail["cutWidth"].asInt();
+			//					t_cf.cut_height = t_detail["cutHeight"].asInt();
+			//					t_cf.position_x = t_detail["positionX"].asInt();
+			//					t_cf.position_y = t_detail["positionY"].asInt();
+			//					t_cf.ani_filename = CCSTR_CWF("card%d_animation.png", t_card["no"].asInt())->getCString();
+			//					card_reduction_list.push_back(t_cf);
+			//				}
+		}
+		
+		NSDS_SS(kSDS_CI_int1_script_s, t_card["no"].asInt(), t_card["script"].asString(), false);
+		NSDS_SS(kSDS_CI_int1_profile_s, t_card["no"].asInt(), t_card["profile"].asString(), false);
+		NSDS_SS(kSDS_CI_int1_name_s, t_card["no"].asInt(), t_card["name"].asString(), false);
+		NSDS_SI(kSDS_CI_int1_mPrice_ruby_i, t_card["no"].asInt(), t_card["mPrice"][mySGD->getGoodsTypeToKey(kGoodsType_ruby)].asInt(), false);
+		NSDS_SI(kSDS_CI_int1_mPrice_pass_i, t_card["no"].asInt(), t_card["mPrice"][mySGD->getGoodsTypeToKey(kGoodsType_pass6)].asInt(), false);
+		
+		NSDS_SI(kSDS_CI_int1_type_i, t_card["no"].asInt(), t_card["type"].asInt(), false);
+		NSDS_SS(kSDS_CI_int1_category_s, t_card["no"].asInt(), t_card["category"].asString(), false);
+		NSDS_SI(kSDS_CI_int1_level_i, t_card["no"].asInt(), t_card["level"].asInt(), false);
+		
+		int sound_cnt = t_card["sound"].size();
+		NSDS_SI(kSDS_CI_int1_soundCnt_i, t_card["no"].asInt(), sound_cnt, false);
+		for(int j=1;j<=sound_cnt;j++)
+		{
+			NSDS_SS(kSDS_CI_int1_soundType_int1_s, t_card["no"].asInt(), j, t_card["sound"][j-1].asString(), false);
+		}
+		
+		NSDS_SI(kSDS_CI_int1_characterNo_i, t_card["no"].asInt(), t_card["characterNo"].asInt(), false);
+		
+		Json::Value t_silImgInfo = t_card[sil_info_key.c_str()];
+		if(is_have_adult && (t_silImgInfo.isNull() || t_silImgInfo.empty()))
+		{
+			t_silImgInfo = t_card["silImgInfo"];
+		}
+		
+		
+		NSDS_SB(kSDS_CI_int1_silImgInfoIsSil_b, t_card["no"].asInt(), t_silImgInfo["isSil"].asBool(), false);
+		if(t_silImgInfo["isSil"].asBool())
+		{
+			if(NSDS_GS(kSDS_CI_int1_silImgInfoImg_s, t_card["no"].asInt()) != t_silImgInfo["img"].asString())
+			{
+				// check, after download ----------
+				DownloadFile t_df;
+				t_df.size = t_silImgInfo["size"].asInt();
+				t_df.img = t_silImgInfo["img"].asString().c_str();
+				t_df.filename = CCSTR_CWF("card%d_invisible.png", t_card["no"].asInt())->getCString();
+				t_df.key = CCSTR_CWF("%d_silImgInfo_img", t_card["no"].asInt())->getCString();
+				
+				auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
+				if(iter == card_download_list.end())
+					card_download_list.push_back(t_df);
+				// ================================
+			}
+		}
+		
+		Json::Value t_faceInfo = t_card[face_info_key.c_str()];
+		if(is_have_adult && (t_faceInfo.isNull() || t_faceInfo.empty()))
+		{
+			t_faceInfo = t_card["faceInfo"];
+		}
+		
+		if(!t_faceInfo.isNull() && t_faceInfo.asString() != "" && NSDS_GS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt()) != (t_faceInfo["ccbiID"].asString() + ".ccbi"))
+		{
+			NSDS_SB(kSDS_CI_int1_haveFaceInfo_b, t_card["no"].asInt(), true, false);
+//			NSDS_SS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt(), t_faceInfo["ccbiID"].asString() + ".ccbi", false);
+			
+			DownloadFile t_df1;
+			t_df1.size = t_faceInfo["size"].asInt();
+			t_df1.img = t_faceInfo["ccbi"].asString().c_str();
+			t_df1.filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
+			t_df1.key = mySDS->getRKey(kSDS_CI_int1_faceInfoCcbi_s).c_str();
+			card_download_list.push_back(t_df1);
+			
+			DownloadFile t_df2;
+			t_df2.size = t_faceInfo["size"].asInt();
+			t_df2.img = t_faceInfo["plist"].asString().c_str();
+			t_df2.filename = t_faceInfo["imageID"].asString() + ".plist";
+			t_df2.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPlist_s).c_str();
+			card_download_list.push_back(t_df2);
+			
+			DownloadFile t_df3;
+			t_df3.size = t_faceInfo["size"].asInt();
+			t_df3.img = t_faceInfo["pvrccz"].asString().c_str();
+			t_df3.filename = t_faceInfo["imageID"].asString() + ".pvr.ccz";
+			t_df3.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPvrccz_s).c_str();
+			card_download_list.push_back(t_df3);
+			
+			//				if(!is_add_cf)
+			//				{
 			//					CopyFile t_cf;
-			//					t_cf.from_filename = t_df.filename.c_str();
+			//					t_cf.from_filename = CCSTR_CWF("card%d_visible.png", t_card["no"].asInt())->getCString();
 			//					t_cf.to_filename = CCSTR_CWF("card%d_thumbnail.png", t_card["no"].asInt())->getCString();
 			//					card_reduction_list.push_back(t_cf);
 			//
 			//					is_add_cf = true;
+			//				}
+			//
+			//				CopyFile t_cf = card_reduction_list.back();
+			//				card_reduction_list.pop_back();
+			//				t_cf.is_ccb = true;
+			//				t_cf.ccb_filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
+			//
+			//				card_reduction_list.push_back(t_cf);
 		}
-	}
-	
-	Json::Value t_aniInfo = t_card["aniInfo"];
-	NSDS_SB(kSDS_CI_int1_aniInfoIsAni_b, t_card["no"].asInt(), t_aniInfo["isAni"].asBool(), false);
-	if(t_aniInfo["isAni"].asBool())
-	{
-		Json::Value t_detail = t_aniInfo["detail"];
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailLoopLength_i, t_card["no"].asInt(), t_detail["loopLength"].asInt(), false);
-		
-		Json::Value t_loopSeq = t_detail["loopSeq"];
-		for(int j=0;j<t_loopSeq.size();j++)
-			NSDS_SI(kSDS_CI_int1_aniInfoDetailLoopSeq_int2_i, t_card["no"].asInt(), j, t_loopSeq[j].asInt(), false);
-		
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailCutWidth_i, t_card["no"].asInt(), t_detail["cutWidth"].asInt(), false);
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailCutHeight_i, t_card["no"].asInt(), t_detail["cutHeight"].asInt(), false);
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailCutLength_i, t_card["no"].asInt(), t_detail["cutLength"].asInt(), false);
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailPositionX_i, t_card["no"].asInt(), t_detail["positionX"].asInt(), false);
-		NSDS_SI(kSDS_CI_int1_aniInfoDetailPositionY_i, t_card["no"].asInt(), t_detail["positionY"].asInt(), false);
-		
-		if(NSDS_GS(kSDS_CI_int1_aniInfoDetailImg_s, t_card["no"].asInt()) != t_detail["img"].asString())
+		else
 		{
-			// check, after download ----------
-			DownloadFile t_df;
-			t_df.size = t_detail["size"].asInt();
-			t_df.img = t_detail["img"].asString().c_str();
-			t_df.filename = CCSTR_CWF("card%d_animation.png", t_card["no"].asInt())->getCString();
-			t_df.key = CCSTR_CWF("%d_aniInfo_detail_img", t_card["no"].asInt())->getCString();
-			
-			auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
-			if(iter == card_download_list.end())
-				card_download_list.push_back(t_df);
-			// ================================
+			NSDS_SB(kSDS_CI_int1_haveFaceInfo_b, t_card["no"].asInt(), false, false);
 		}
-		
-		//				if(is_add_cf)
-		//				{
-		//					CopyFile t_cf = card_reduction_list.back();
-		//					card_reduction_list.pop_back();
-		//					t_cf.is_ani = true;
-		//					t_cf.cut_width = t_detail["cutWidth"].asInt();
-		//					t_cf.cut_height = t_detail["cutHeight"].asInt();
-		//					t_cf.position_x = t_detail["positionX"].asInt();
-		//					t_cf.position_y = t_detail["positionY"].asInt();
-		//					t_cf.ani_filename = CCSTR_CWF("card%d_animation.png", t_card["no"].asInt())->getCString();
-		//					card_reduction_list.push_back(t_cf);
-		//				}
+		mySDS->fFlush(t_card["piece"].asInt(), kSDS_SI_base);
 	}
-	
-	NSDS_SS(kSDS_CI_int1_script_s, t_card["no"].asInt(), t_card["script"].asString(), false);
-	NSDS_SS(kSDS_CI_int1_profile_s, t_card["no"].asInt(), t_card["profile"].asString(), false);
-	NSDS_SS(kSDS_CI_int1_name_s, t_card["no"].asInt(), t_card["name"].asString(), false);
-	NSDS_SI(kSDS_CI_int1_mPrice_ruby_i, t_card["no"].asInt(), t_card["mPrice"][mySGD->getGoodsTypeToKey(kGoodsType_ruby)].asInt(), false);
-	NSDS_SI(kSDS_CI_int1_mPrice_pass_i, t_card["no"].asInt(), t_card["mPrice"][mySGD->getGoodsTypeToKey(kGoodsType_pass6)].asInt(), false);
-	
-	NSDS_SI(kSDS_CI_int1_type_i, t_card["no"].asInt(), t_card["type"].asInt(), false);
-	NSDS_SS(kSDS_CI_int1_category_s, t_card["no"].asInt(), t_card["category"].asString(), false);
-	NSDS_SI(kSDS_CI_int1_level_i, t_card["no"].asInt(), t_card["level"].asInt(), false);
-	
-	int sound_cnt = t_card["sound"].size();
-	NSDS_SI(kSDS_CI_int1_soundCnt_i, t_card["no"].asInt(), sound_cnt, false);
-	for(int j=1;j<=sound_cnt;j++)
-	{
-		NSDS_SS(kSDS_CI_int1_soundType_int1_s, t_card["no"].asInt(), j, t_card["sound"][j-1].asString(), false);
-	}
-	
-	NSDS_SI(kSDS_CI_int1_characterNo_i, t_card["no"].asInt(), t_card["characterNo"].asInt(), false);
-	
-	Json::Value t_silImgInfo = t_card[sil_info_key.c_str()];
-	if(is_have_adult && (t_silImgInfo.isNull() || t_silImgInfo.empty()))
-	{
-		t_silImgInfo = t_card["silImgInfo"];
-	}
-	
-	
-	NSDS_SB(kSDS_CI_int1_silImgInfoIsSil_b, t_card["no"].asInt(), t_silImgInfo["isSil"].asBool(), false);
-	if(t_silImgInfo["isSil"].asBool())
-	{
-		if(NSDS_GS(kSDS_CI_int1_silImgInfoImg_s, t_card["no"].asInt()) != t_silImgInfo["img"].asString())
-		{
-			// check, after download ----------
-			DownloadFile t_df;
-			t_df.size = t_silImgInfo["size"].asInt();
-			t_df.img = t_silImgInfo["img"].asString().c_str();
-			t_df.filename = CCSTR_CWF("card%d_invisible.png", t_card["no"].asInt())->getCString();
-			t_df.key = CCSTR_CWF("%d_silImgInfo_img", t_card["no"].asInt())->getCString();
-			
-			auto iter = find(card_download_list.begin(), card_download_list.end(), t_df);
-			if(iter == card_download_list.end())
-				card_download_list.push_back(t_df);
-			// ================================
-		}
-	}
-	
-	Json::Value t_faceInfo = t_card[face_info_key.c_str()];
-	if(is_have_adult && (t_faceInfo.isNull() || t_faceInfo.empty()))
-	{
-		t_faceInfo = t_card["faceInfo"];
-	}
-	
-	if(!t_faceInfo.isNull() && t_faceInfo.asString() != "")
-	{
-		NSDS_SB(kSDS_CI_int1_haveFaceInfo_b, t_card["no"].asInt(), true, false);
-		NSDS_SS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt(), t_faceInfo["ccbiID"].asString() + ".ccbi", false);
-		
-		DownloadFile t_df1;
-		t_df1.size = t_faceInfo["size"].asInt();
-		t_df1.img = t_faceInfo["ccbi"].asString().c_str();
-		t_df1.filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
-		t_df1.key = mySDS->getRKey(kSDS_CI_int1_faceInfoCcbi_s).c_str();
-		card_download_list.push_back(t_df1);
-		
-		DownloadFile t_df2;
-		t_df2.size = t_faceInfo["size"].asInt();
-		t_df2.img = t_faceInfo["plist"].asString().c_str();
-		t_df2.filename = t_faceInfo["imageID"].asString() + ".plist";
-		t_df2.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPlist_s).c_str();
-		card_download_list.push_back(t_df2);
-		
-		DownloadFile t_df3;
-		t_df3.size = t_faceInfo["size"].asInt();
-		t_df3.img = t_faceInfo["pvrccz"].asString().c_str();
-		t_df3.filename = t_faceInfo["imageID"].asString() + ".pvr.ccz";
-		t_df3.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPvrccz_s).c_str();
-		card_download_list.push_back(t_df3);
-		
-		//				if(!is_add_cf)
-		//				{
-		//					CopyFile t_cf;
-		//					t_cf.from_filename = CCSTR_CWF("card%d_visible.png", t_card["no"].asInt())->getCString();
-		//					t_cf.to_filename = CCSTR_CWF("card%d_thumbnail.png", t_card["no"].asInt())->getCString();
-		//					card_reduction_list.push_back(t_cf);
-		//
-		//					is_add_cf = true;
-		//				}
-		//
-		//				CopyFile t_cf = card_reduction_list.back();
-		//				card_reduction_list.pop_back();
-		//				t_cf.is_ccb = true;
-		//				t_cf.ccb_filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
-		//
-		//				card_reduction_list.push_back(t_cf);
-	}
-	mySDS->fFlush(t_card["piece"].asInt(), kSDS_SI_base);
 	
 	card_data_write_frame++;
 }
