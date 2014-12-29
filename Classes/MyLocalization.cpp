@@ -643,9 +643,9 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("일차"), kMyLocalKey_attendanceDay);
 	
 	ko->setObject(CCString::create("생명의 돌"), kMyLocalKey_buyMorphingTitle);
-	ko->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면 카드가 살아납니다.<font newline=18>생명의 돌은 PVP 및 각종 이벤트에서<font newline=18>보상으로 얻을 수 있습니다."), kMyLocalKey_buyMorphingContent);
+	ko->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면<font color=961 newline=18>카드가 살아납니다."), kMyLocalKey_buyMorphingContent);
 	
-	ko->setObject(CCString::create("보유갯수 :"), kMyLocalKey_buyMorphingTake);
+	ko->setObject(CCString::create("보유개수 :"), kMyLocalKey_buyMorphingTake);
 	ko->setObject(CCString::create("개"), kMyLocalKey_buyMorphingTakeValue);
 	
 	ko->setObject(CCString::create("사용하기"), kMyLocalKey_buyMorphingBuy);
@@ -1125,6 +1125,11 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("메뉴"), kMyLocalKey_menu);
 	ko->setObject(CCString::create("연동 해제"), kMyLocalKey_linkRelease);
 	ko->setObject(CCString::create("<font newline=32>이 게임물은 청소년이용불가 게임물로</font><font>18세 미만의 청소년은 이용할 수 없습니다.</font>"), kMyLocalKey_ratingScript);
+	ko->setObject(CCString::create("연동 코드가 입력되어 있지 않아서\n생명의 돌이 저장되지 않습니다.\n그래도 하시겠습니까?"), kMyLocalKey_notLinkedNoTakeLifeStone);
+	ko->setObject(CCString::create("돌아가기"), kMyLocalKey_back);
+	ko->setObject(CCString::create("<font newline=15>\"땅따먹기 리턴즈 with 섬란카구라 NewWave\"에서</font><font newline=15>획득한 카드들의 성인버전을 보기위한 메뉴입니다.</font><font newline=15>다이어리를 보기위해선 게임앱의</font><font newline=15>설정메뉴에서 발급받은 연동코드가 필요합니다.</font>"), kMyLocalKey_ddmkLinkMent);
+	ko->setObject(CCString::create("연동코드입력하기"), kMyLocalKey_goInputLinkCode);
+	ko->setObject(CCString::create("게임앱다운받기"), kMyLocalKey_goGameAppDown);
 	
 	setObject(ko, "ko");
 }
@@ -1663,9 +1668,9 @@ void MyLocal::en()
 	en->setObject(CCString::create("DAY"), kMyLocalKey_attendanceDay);
 	
 	en->setObject(CCString::create("생명의 돌"), kMyLocalKey_buyMorphingTitle);
-	en->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면 카드가 살아납니다.<font newline=18>생명의 돌은 PVP 및 각종 이벤트에서<font newline=18>보상으로 얻을 수 있습니다."), kMyLocalKey_buyMorphingContent);
+	en->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면<font color=961 newline=18>카드가 살아납니다."), kMyLocalKey_buyMorphingContent);
 	
-	en->setObject(CCString::create("보유갯수 :"), kMyLocalKey_buyMorphingTake);
+	en->setObject(CCString::create("보유개수 :"), kMyLocalKey_buyMorphingTake);
 	en->setObject(CCString::create("개"), kMyLocalKey_buyMorphingTakeValue);
 	
 	en->setObject(CCString::create("사용하기"), kMyLocalKey_buyMorphingBuy);
@@ -2625,9 +2630,9 @@ void MyLocal::ja()
 	ja->setObject(CCString::create("DAY"), kMyLocalKey_attendanceDay);
 	
 	ja->setObject(CCString::create("생명의 돌"), kMyLocalKey_buyMorphingTitle);
-	ja->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면 카드가 살아납니다.<font newline=18>생명의 돌은 PVP 및 각종 이벤트에서<font newline=18>보상으로 얻을 수 있습니다."), kMyLocalKey_buyMorphingContent);
+	ja->setObject(CCString::create("<font color=961 newline=18>생명의 돌을 사용하면<font color=961 newline=18>카드가 살아납니다."), kMyLocalKey_buyMorphingContent);
 	
-	ja->setObject(CCString::create("보유갯수 :"), kMyLocalKey_buyMorphingTake);
+	ja->setObject(CCString::create("보유개수 :"), kMyLocalKey_buyMorphingTake);
 	ja->setObject(CCString::create("개"), kMyLocalKey_buyMorphingTakeValue);
 	
 	ja->setObject(CCString::create("사용하기"), kMyLocalKey_buyMorphingBuy);

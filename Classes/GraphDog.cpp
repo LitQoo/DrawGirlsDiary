@@ -235,6 +235,30 @@ bool GraphDog::isExistApp()
 #endif
 }
 
+string GraphDog::getGameDownUrl()
+{
+	string return_value = "";
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+	JniMethodInfo __minfo;
+	
+	if(JniHelper::getMethodInfo(__minfo, JNIKelper::getInstance()->getClassName().c_str(), "getGameDownUrl", "()Ljava/lang/String;"))
+	{
+		jstring ret = (jstring)__minfo.env->CallObjectMethod(JNIKelper::getInstance()->getJobj(), __minfo.methodID);
+		__minfo.env->DeleteLocalRef(__minfo.classID);
+		return_value = JniHelper::jstring2string(ret);
+		__minfo.env->DeleteLocalRef(ret);
+	}
+	//		minfo.env->DeleteGlobalRef(jobj);
+	//		minfo.env->DeleteLocalRef(minfo.classID);
+	//	}
+	
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+	return_value = "";
+#endif
+	
+	return return_value;
+}
+
 void GraphDog::openOriginalApp()
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID

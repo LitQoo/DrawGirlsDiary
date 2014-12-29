@@ -35,6 +35,8 @@
 #include "NoticeContent.h"
 #include "DiaryOptionPopup.h"
 #include "LinkPopup.h"
+#include "CommonAnimation.h"
+#include "DdmkLinkPopup.h"
 
 CCScene* TitleRenewalScene::scene()
 {
@@ -103,20 +105,28 @@ bool TitleRenewalScene::init()
 		addChild(ratings);
 		
 		StyledLabelTTF* rating_label = StyledLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_ratingScript), mySGD->getFont().c_str(), 22, 999, StyledAlignment::kCenterAlignment);
-		rating_label->setPosition(ccp(240,160));
+		rating_label->setPosition(ccp(240,170));
 		addChild(rating_label);
 		
-		addChild(KSTimer::create(3.f, [=]()
+		CCSprite* detail_rating = CCSprite::create("game_ratings_text.png");
+		detail_rating->setAnchorPoint(ccp(0.5f,0.f));
+		detail_rating->setPosition(ccp(240,160 - 160*myDSH->ui_top/320.f/myDSH->screen_convert_rate+10));
+		addChild(detail_rating);
+		
+		addChild(KSTimer::create(3.5f, [=]()
 								 {
 									 addChild(KSGradualValue<int>::create(255, 0, 0.3f, [=](int t_i)
 																		  {
 																			  ratings->setOpacity(t_i);
+																			  detail_rating->setOpacity(t_i);
 																			  KS::setOpacity(rating_label, t_i);
 																		  }, [=](int t_i)
 																		  {
 																			  ratings->setOpacity(t_i);
+																			  detail_rating->setOpacity(t_i);
 																			  KS::setOpacity(rating_label, t_i);
 																			  ratings->removeFromParent();
+																			  detail_rating->removeFromParent();
 																			  rating_label->removeFromParent();
 																			  
 																			  white_back = CCSprite::create("whitePaper.png");
@@ -551,14 +561,19 @@ void TitleRenewalScene::setMain()
 									}
 								  else
 									{
-										LinkPopup* t_popup = LinkPopup::create(-999, [=]()
-																			   {
-																				   is_menu_enable = true;
-																			   }, [=]()
-																			   {
-																				   CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
-																			   });
+										DdmkLinkPopup* t_popup = DdmkLinkPopup::create(-999, [=](){is_menu_enable = true;}, [=]()
+																					   {
+																						   LinkPopup* t_popup2 = LinkPopup::create(-999, [=]()
+																																  {
+																																	  is_menu_enable = true;
+																																  }, [=]()
+																																  {
+																																	  CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
+																																  });
+																						   addChild(t_popup2, 999);
+																					   });
 										addChild(t_popup, 999);
+										
 //										if(graphdog->isExistApp())
 //										{
 //											CCLOG("setup app");
@@ -575,6 +590,31 @@ void TitleRenewalScene::setMain()
 							  });
 	diary_button->setPosition(ccp(150, 40));
 	addChild(diary_button, 999);
+	
+	if(myDSH->is_linked)
+	{
+		CCSize t_screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+		float t_screen_scale_x = t_screen_size.width/t_screen_size.height/1.5f;
+		if(t_screen_scale_x < 1.f)
+			t_screen_scale_x = 1.f;
+		
+		CCSprite* life_stone_back = CCSprite::create("subapp_stonecount.png");
+		life_stone_back->setAnchorPoint(ccp(1,1));
+		life_stone_back->setPosition(ccp(240 + 240*t_screen_scale_x-10, 160 + 160*myDSH->ui_top/320.f/myDSH->screen_convert_rate-10));
+		addChild(life_stone_back, 999);
+		
+		KSLabelTTF* life_stone_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_haveLifeStoneCount), mySGD->getFont().c_str(), 11);
+		life_stone_label->enableOuterStroke(ccBLACK, 1, 128, true);
+		life_stone_label->setPosition(ccpFromSize(life_stone_back->getContentSize()/2.f) + ccp(0,9));
+		life_stone_back->addChild(life_stone_label);
+		
+		KSLabelTTF* life_stone_count = KSLabelTTF::create(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)), mySGD->getFont().c_str(), 18);
+		life_stone_count->setColor(ccc3(255, 170, 20));
+		life_stone_count->enableOuterStroke(ccBLACK, 1, 128, true);
+		life_stone_count->setAnchorPoint(ccp(0,0.5f));
+		life_stone_count->setPosition(ccpFromSize(life_stone_back->getContentSize()/2.f) + ccp(0,-9));
+		life_stone_back->addChild(life_stone_count);
+	}
 	
 //	// 상점
 //	CommonButton* shop_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_shop), 12, CCSizeMake(70,40), CCScale9Sprite::create("subbutton_purple2.png", CCRectMake(0,0,62,32), CCRectMake(30, 15, 2, 2)), -999);
@@ -667,7 +707,96 @@ void TitleRenewalScene::setMain()
 								 
 								 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
 								 
-								 CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
+								 if(myDSH->is_linked)
+									{
+										CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
+									}
+								 else
+									{
+										ASPopupView* t_popup = ASPopupView::create(-999);
+										CCSize screen_size = CCEGLView::sharedOpenGLView()->getFrameSize();
+										float screen_scale_x = screen_size.width/screen_size.height/1.5f;
+										if(screen_scale_x < 1.f)
+											screen_scale_x = 1.f;
+										
+										float height_value = 320.f;
+										if(myDSH->screen_convert_rate < 1.f)
+											height_value = 320.f/myDSH->screen_convert_rate;
+										
+										if(height_value < myDSH->ui_top)
+											height_value = myDSH->ui_top;
+										
+										t_popup->setDimmedSize(CCSizeMake(screen_scale_x*480.f, height_value));// /myDSH->screen_convert_rate));
+										
+										t_popup->setDimmedPosition(ccp(240, 160));
+										t_popup->setBasePosition(ccp(240, 160));
+										
+										
+										CCNode* t_container = CCNode::create();
+										t_popup->setContainerNode(t_container);
+										
+										CCSprite* case_back = CCSprite::create("popup_small_back.png");
+										case_back->setPosition(CCPointZero);
+										t_container->addChild(case_back);
+										
+										CCScale9Sprite* content_back = CCScale9Sprite::create("common_grayblue.png", CCRectMake(0, 0, 26, 26), CCRectMake(12, 12, 2, 2));
+										content_back->setContentSize(CCSizeMake(251, 113));
+										content_back->setPosition(ccp(0.0,-12)); 			// dt (0.0,-4.5)
+										t_container->addChild(content_back);
+										
+										KSLabelTTF* title_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_noti), mySGD->getFont().c_str(), 12);
+										title_label->disableOuterStroke();
+										title_label->setPosition(ccp(-85,case_back->getContentSize().height/2.f-35));
+										t_container->addChild(title_label);
+										
+										
+										KSLabelTTF* ment_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_notLinkedNoTakeLifeStone), mySGD->getFont().c_str(), 12);
+										ment_label->setPosition(ccpFromSize(content_back->getContentSize()/2.f));
+										content_back->addChild(ment_label);
+										
+										CommonButton* close_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_back), 12, CCSizeMake(101, 44), CCScale9Sprite::create("achievement_button_success.png", CCRectMake(0, 0, 101, 44), CCRectMake(50, 21, 1, 2)), t_popup->getTouchPriority()-5);
+										close_button->setPosition(ccp(-60,case_back->getContentSize().height/2.f*-1+45));
+										close_button->setFunction([=](CCObject* sender)
+																  {
+																	  AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																	  
+																	  CommonAnimation::closePopup(t_popup, t_container,
+																								  t_popup->getDimmedSprite(), nullptr,
+																								  [=]()
+																								  {
+																									  is_menu_enable = true;
+																									  t_popup->removeFromParent();
+																								  });
+																  });
+										t_container->addChild(close_button);
+										
+										
+										CommonButton* continue_button = CommonButton::create(myLoc->getLocalForKey(kMyLocalKey_continue), 12, CCSizeMake(101, 44), CCScale9Sprite::create("achievement_button_success.png", CCRectMake(0, 0, 101, 44), CCRectMake(50, 21, 1, 2)), t_popup->getTouchPriority()-5);
+										continue_button->setPosition(ccp(60,case_back->getContentSize().height/2.f*-1+45));
+										continue_button->setFunction([=](CCObject* sender)
+																	 {
+																		 AudioEngine::sharedInstance()->playEffect("se_button1.mp3", false);
+																		 
+																		 CommonAnimation::closePopup(t_popup, t_container,
+																									 t_popup->getDimmedSprite(), nullptr,
+																									 [=]()
+																									 {
+																										 CCDirector::sharedDirector()->replaceScene(PieceGame::scene());
+																									 });
+																	 });
+										t_container->addChild(continue_button);
+										
+										
+										content_back->setContentSize(content_back->getContentSize() + CCSizeMake(0, -53));
+										content_back->setPositionY(content_back->getPositionY() + 22.5f);
+										
+										ment_label->setPosition(ccpFromSize(content_back->getContentSize()/2.f));
+										
+										t_popup->getDimmedSprite()->setOpacity(0);
+										CommonAnimation::openPopup(t_popup, t_container, t_popup->getDimmedSprite());
+										
+										addChild(t_popup, 9999);
+									}
 							 });
 	game_button->setPosition(ccp(330, 40));
 	addChild(game_button, 999);
@@ -2663,31 +2792,40 @@ void TitleRenewalScene::cardDataWrite()
 			t_faceInfo = t_card["faceInfo"];
 		}
 		
-		if(!t_faceInfo.isNull() && t_faceInfo.asString() != "" && NSDS_GS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt()) != (t_faceInfo["ccbiID"].asString() + ".ccbi"))
+		if(!t_faceInfo.isNull() && t_faceInfo.asString() != "")
 		{
 			NSDS_SB(kSDS_CI_int1_haveFaceInfo_b, t_card["no"].asInt(), true, false);
-//			NSDS_SS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt(), t_faceInfo["ccbiID"].asString() + ".ccbi", false);
+			NSDS_SS(kSDS_CI_int1_faceInfo_s, t_card["no"].asInt(), t_faceInfo["ccbiID"].asString() + ".ccbi", false);
 			
-			DownloadFile t_df1;
-			t_df1.size = t_faceInfo["size"].asInt();
-			t_df1.img = t_faceInfo["ccbi"].asString().c_str();
-			t_df1.filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
-			t_df1.key = mySDS->getRKey(kSDS_CI_int1_faceInfoCcbi_s).c_str();
-			card_download_list.push_back(t_df1);
+			if(NSDS_GS(kSDS_CI_int1_faceInfoCcbi_s, t_card["no"].asInt()) != (t_faceInfo["ccbiID"].asString() + ".ccbi"))
+			{
+				DownloadFile t_df1;
+				t_df1.size = t_faceInfo["size"].asInt();
+				t_df1.img = t_faceInfo["ccbi"].asString().c_str();
+				t_df1.filename = t_faceInfo["ccbiID"].asString() + ".ccbi";
+				t_df1.key = ccsf(mySDS->getRKey(kSDS_CI_int1_faceInfoCcbi_s).c_str(), t_card["no"].asInt());
+				card_download_list.push_back(t_df1);
+			}
 			
-			DownloadFile t_df2;
-			t_df2.size = t_faceInfo["size"].asInt();
-			t_df2.img = t_faceInfo["plist"].asString().c_str();
-			t_df2.filename = t_faceInfo["imageID"].asString() + ".plist";
-			t_df2.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPlist_s).c_str();
-			card_download_list.push_back(t_df2);
+			if(NSDS_GS(kSDS_CI_int1_faceInfoPlist_s, t_card["no"].asInt()) != (t_faceInfo["imageID"].asString() + ".plist"))
+			{
+				DownloadFile t_df2;
+				t_df2.size = t_faceInfo["size"].asInt();
+				t_df2.img = t_faceInfo["plist"].asString().c_str();
+				t_df2.filename = t_faceInfo["imageID"].asString() + ".plist";
+				t_df2.key = ccsf(mySDS->getRKey(kSDS_CI_int1_faceInfoPlist_s).c_str(), t_card["no"].asInt());
+				card_download_list.push_back(t_df2);
+			}
 			
-			DownloadFile t_df3;
-			t_df3.size = t_faceInfo["size"].asInt();
-			t_df3.img = t_faceInfo["pvrccz"].asString().c_str();
-			t_df3.filename = t_faceInfo["imageID"].asString() + ".pvr.ccz";
-			t_df3.key = mySDS->getRKey(kSDS_CI_int1_faceInfoPvrccz_s).c_str();
-			card_download_list.push_back(t_df3);
+			if(NSDS_GS(kSDS_CI_int1_faceInfoPvrccz_s, t_card["no"].asInt()) != (t_faceInfo["imageID"].asString() + ".pvr.ccz"))
+			{
+				DownloadFile t_df3;
+				t_df3.size = t_faceInfo["size"].asInt();
+				t_df3.img = t_faceInfo["pvrccz"].asString().c_str();
+				t_df3.filename = t_faceInfo["imageID"].asString() + ".pvr.ccz";
+				t_df3.key = ccsf(mySDS->getRKey(kSDS_CI_int1_faceInfoPvrccz_s).c_str(), t_card["no"].asInt());
+				card_download_list.push_back(t_df3);
+			}
 			
 			//				if(!is_add_cf)
 			//				{

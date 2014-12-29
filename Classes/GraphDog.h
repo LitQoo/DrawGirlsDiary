@@ -148,6 +148,7 @@ public:
 	void openOriginalApp();
 	bool is_returned_checkIntentData;
 	void checkIntentData();
+	string getGameDownUrl();
 	
 	string t_memberID;
 	string t_diaryCode;

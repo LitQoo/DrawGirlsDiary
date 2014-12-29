@@ -718,7 +718,7 @@ void CardSettingPopup::changeSortType( CardSortType t_type, bool is_init )
 			}
 		} pred;
 		
-		sort(card_list.begin(), card_list.end(), pred);
+		stable_sort(card_list.begin(), card_list.end(), pred);
 	}
 	else if(t_type == kCST_take)
 	{
@@ -729,7 +729,7 @@ void CardSettingPopup::changeSortType( CardSortType t_type, bool is_init )
 			}
 		} pred;
 		
-		sort(card_list.begin(), card_list.end(), pred);
+		stable_sort(card_list.begin(), card_list.end(), pred);
 	}
 	else if(t_type == kCST_takeReverse)
 	{
@@ -740,7 +740,7 @@ void CardSettingPopup::changeSortType( CardSortType t_type, bool is_init )
 			}
 		} pred;
 		
-		sort(card_list.begin(), card_list.end(), pred);
+		stable_sort(card_list.begin(), card_list.end(), pred);
 	}
 	else if(t_type == kCST_gradeUp) // rank
 	{
@@ -751,7 +751,7 @@ void CardSettingPopup::changeSortType( CardSortType t_type, bool is_init )
 			}
 		} pred;
 		
-		sort(card_list.begin(), card_list.end(), pred);
+		stable_sort(card_list.begin(), card_list.end(), pred);
 	}
 	else if(t_type == kCST_gradeDown) // rank
 	{
@@ -762,7 +762,7 @@ void CardSettingPopup::changeSortType( CardSortType t_type, bool is_init )
 			}
 		} pred;
 		
-		sort(card_list.begin(), card_list.end(), pred);
+		stable_sort(card_list.begin(), card_list.end(), pred);
 	}
 }
 
@@ -1326,6 +1326,19 @@ CCTableViewCell* CardSettingPopup::tableCellAtIndex( CCTableView *table, unsigne
 				t_card_menu->setPosition(card_position);
 				cell->addChild(t_card_menu);
 				t_card_menu->setTouchPriority(-180-3);
+				
+				if(mySGD->getHasGottenCardDataForCardNumber(card_number).is_morphing.getV())
+				{
+					CCSprite* n_heart = CCSprite::create("pass_ticket6.png");
+					n_heart->setScale(0.6f);
+					n_heart->setPosition(ccp(14,13)+add_position);
+					n_frame->addChild(n_heart);
+					
+					CCSprite* s_heart = CCSprite::create("pass_ticket6.png");
+					s_heart->setScale(0.6f);
+					s_heart->setPosition(ccp(14,13)+add_position);
+					s_frame->addChild(s_heart);
+				}
 			}
 			else
 			{
@@ -1444,6 +1457,19 @@ CCTableViewCell* CardSettingPopup::tableCellAtIndex( CCTableView *table, unsigne
 			t_card_menu->setPosition(card_position);
 			cell->addChild(t_card_menu);
 			t_card_menu->setTouchPriority(-180-3);
+			
+			if(mySGD->getHasGottenCardDataForCardNumber(card_number).is_morphing.getV())
+			{
+				CCSprite* n_heart = CCSprite::create("pass_ticket6.png");
+				n_heart->setScale(0.6f);
+				n_heart->setPosition(ccp(14,13)+add_position);
+				n_frame->addChild(n_heart);
+				
+				CCSprite* s_heart = CCSprite::create("pass_ticket6.png");
+				s_heart->setScale(0.6f);
+				s_heart->setPosition(ccp(14,13)+add_position);
+				s_frame->addChild(s_heart);
+			}
 		}
 	}
 	else
@@ -1544,6 +1570,19 @@ CCTableViewCell* CardSettingPopup::tableCellAtIndex( CCTableView *table, unsigne
 			//			select_img->setPosition(card_position);
 			//			cell->addChild(select_img);
 			//		}
+			
+			if(mySGD->getHasGottenCardDataForCardNumber(card_number).is_morphing.getV())
+			{
+				CCSprite* n_heart = CCSprite::create("pass_ticket6.png");
+				n_heart->setScale(0.6f);
+				n_heart->setPosition(ccp(14,13)+add_position);
+				n_frame->addChild(n_heart);
+				
+				CCSprite* s_heart = CCSprite::create("pass_ticket6.png");
+				s_heart->setScale(0.6f);
+				s_heart->setPosition(ccp(14,13)+add_position);
+				s_frame->addChild(s_heart);
+			}
 		}
 	}
 	

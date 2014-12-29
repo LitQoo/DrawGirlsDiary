@@ -238,8 +238,8 @@ public:
 	void completeInstallPromotion();
 	void purchaseProduct(Json::Value param,Json::Value callbackParam, jsonSelType func);
 	void purchaseProduct(Json::Value param,Json::Value callbackParam, CCObject* target, jsonSelType func);
-	void openUrl(const std::string& url);
-	void openHSPUrl(const std::string& url);
+	void openUrl(const std::string& url); // 디바이스 자체 브라우저 작동
+	void openHSPUrl(const std::string& url); // 앱 내부 창 띄움
 	void openCSCenter(const std::string& url);
 	void mappingToAccount(enum HSPMapping mt, bool force, jsonSelType func);
 	void getIsUsimKorean(jsonSelType func); // value["korean"] 이 1이면 약관 페이지 띄워야 함.

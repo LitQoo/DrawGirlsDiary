@@ -96,7 +96,7 @@ void BuyMorphingPopup::myInit(int t_touch_priority, function<void()> t_end_func,
 	back_case->addChild(close_button);
 	
 	StyledLabelTTF* content_label = StyledLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_buyMorphingContent), mySGD->getFont().c_str(), 14, 999, StyledAlignment::kCenterAlignment);
-	content_label->setPosition(ccp(back_in->getContentSize().width / 2.f,back_in->getContentSize().height-20));
+	content_label->setPosition(ccp(back_in->getContentSize().width / 2.f,back_in->getContentSize().height-25));
 	back_in->addChild(content_label);
 	
 	
