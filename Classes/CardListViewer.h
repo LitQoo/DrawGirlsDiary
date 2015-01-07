@@ -35,6 +35,7 @@ enum CSS_MenuTag{
 	kCSS_MT_eventCard,
 	kCSS_MT_diary,
 	kCSS_MT_gameapp,
+	kCSS_MT_refresh,
 	kCSS_MT_event,
 	kCSS_MT_strength,
 	kCSS_MT_tip,

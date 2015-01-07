@@ -1042,6 +1042,7 @@ typedef enum MyLocalKey_ {
 	kMyLocalKey_ddmkLinkMent,
 	kMyLocalKey_goInputLinkCode,
 	kMyLocalKey_goGameAppDown,
+	kMyLocalKey_refresh,
 	
 	kMyLocalKey_lastkey
 }MyLocalKey;

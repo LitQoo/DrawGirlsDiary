@@ -1130,6 +1130,7 @@ void MyLocal::ko()
 	ko->setObject(CCString::create("<font newline=15>\"땅따먹기 리턴즈 with 섬란카구라 NewWave\"에서</font><font newline=15>획득한 카드들의 성인버전을 보기위한 메뉴입니다.</font><font newline=15>다이어리를 보기위해선 게임앱의</font><font newline=15>설정메뉴에서 발급받은 연동코드가 필요합니다.</font>"), kMyLocalKey_ddmkLinkMent);
 	ko->setObject(CCString::create("연동코드입력하기"), kMyLocalKey_goInputLinkCode);
 	ko->setObject(CCString::create("게임앱다운받기"), kMyLocalKey_goGameAppDown);
+	ko->setObject(CCString::create("새로고침"), kMyLocalKey_refresh);
 	
 	setObject(ko, "ko");
 }
@@ -2088,6 +2089,7 @@ void MyLocal::en()
 	en->setObject(CCString::create("추후 업데이트 됩니다."), kMyLocalKey_updateContent);
 	en->setObject(CCString::create("준비중"), kMyLocalKey_communityNotOpenTitle);
 	en->setObject(CCString::create("준비입니다. 공식카페를 이용해 주세요."), kMyLocalKey_communityNotOpenContent);
+	en->setObject(CCString::create("새로고침"), kMyLocalKey_refresh);
 	
 	setObject(en, "en");
 }
@@ -3050,6 +3052,7 @@ void MyLocal::ja()
 	ja->setObject(CCString::create("추후 업데이트 됩니다."), kMyLocalKey_updateContent);
 	ja->setObject(CCString::create("준비중"), kMyLocalKey_communityNotOpenTitle);
 	ja->setObject(CCString::create("준비입니다. 공식카페를 이용해 주세요."), kMyLocalKey_communityNotOpenContent);
+	ja->setObject(CCString::create("새로고침"), kMyLocalKey_refresh);
 
 	setObject(ja, "ja");
 }

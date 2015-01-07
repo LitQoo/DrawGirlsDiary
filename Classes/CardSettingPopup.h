@@ -82,6 +82,7 @@ private:
 	CCMenuItemSprite* event_card_menu;
 	CCMenuItem* diary_menu;
 	CCMenuItem* gameapp_menu;
+	CCMenuItem* refresh_menu;
 	
 	KSLabelTTF* n_take_label;
 	KSLabelTTF* s_take_label;

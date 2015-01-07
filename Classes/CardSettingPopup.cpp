@@ -281,6 +281,34 @@ bool CardSettingPopup::init()
 	gameapp_menu->setPosition(ccp(290,16));
 	tab_menu->addChild(gameapp_menu);
 	
+	
+	CCSprite* n_refresh_img = CCSprite::create("subbutton_pink.png");
+	KSLabelTTF* n_refresh_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_refresh), mySGD->getFont().c_str(), 12.5f);
+	n_refresh_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	n_refresh_label->setPosition(ccpFromSize(n_refresh_img->getContentSize()/2.f) + ccp(0,-1));
+	n_refresh_img->addChild(n_refresh_label);
+	
+	CCSprite* s_refresh_img = CCSprite::create("subbutton_pink.png");
+	s_refresh_img->setColor(ccGRAY);
+	KSLabelTTF* s_refresh_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_refresh), mySGD->getFont().c_str(), 12.5f);
+	s_refresh_label->setColor(ccGRAY);
+	s_refresh_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	s_refresh_label->setPosition(ccpFromSize(s_refresh_img->getContentSize()/2.f) + ccp(0,-1));
+	s_refresh_img->addChild(s_refresh_label);
+	
+	CCSprite* d_refresh_img = GraySprite::create("subbutton_pink.png");
+	((GraySprite*)d_refresh_img)->setGray(true);
+	KSLabelTTF* d_refresh_label = KSLabelTTF::create(myLoc->getLocalForKey(kMyLocalKey_refresh), mySGD->getFont().c_str(), 12.5f);
+	d_refresh_label->enableOuterStroke(ccBLACK, 0.3f, 50, true);
+	d_refresh_label->setPosition(ccpFromSize(d_refresh_img->getContentSize()/2.f) + ccp(0,-1));
+	d_refresh_img->addChild(d_refresh_label);
+	
+	
+	refresh_menu = CCMenuItemSprite::create(n_refresh_img, s_refresh_img, d_refresh_img, this, menu_selector(CardSettingPopup::menuAction));
+	refresh_menu->setTag(kCSS_MT_refresh);
+	refresh_menu->setPosition(ccp(90,16));
+	tab_menu->addChild(refresh_menu);
+	
 	/*
 	CCSprite* n_strength_img = GraySprite::create("subbutton_pink.png");
 	((GraySprite*)n_strength_img)->setGray(true);
@@ -1013,6 +1041,11 @@ void CardSettingPopup::menuAction(CCObject* pSender)
 //			
 ////			if(CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 //				CCDirector::sharedDirector()->end();
+		}
+		else if(tag == kCSS_MT_refresh)
+		{
+			myDSH->is_linked = false;
+			CCDirector::sharedDirector()->replaceScene(TitleRenewalScene::scene());
 		}
 		else if(tag == kCSS_MT_alignDefault)
 		{
