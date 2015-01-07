@@ -132,5 +132,5 @@ void HelpGameAppPopup::buttonAction(CCObject* sender, CCControlEvent t_event)
 	graphdog->openOriginalApp();
 	
 //	if(CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-		CCDirector::sharedDirector()->end();
+//		CCDirector::sharedDirector()->end();
 }

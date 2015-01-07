@@ -119,7 +119,7 @@ void AppDelegate::applicationDidEnterBackground() {
 	SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 	SimpleAudioEngine::sharedEngine()->pauseAllEffects();
 	
-	CCDirector::sharedDirector()->end();
+//	CCDirector::sharedDirector()->end();
 }
 
 // this function will be called when the app is active again

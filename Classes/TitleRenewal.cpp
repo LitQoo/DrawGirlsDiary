@@ -287,6 +287,8 @@ void TitleRenewalScene::endSplash()
 	
 	TRACE();
 	
+	setKeypadEnabled(true);
+	
 //	CCSprite* ratings = CCSprite::create("game_ratings.png");
 //	ratings->setPosition(ccp(240,160));
 //	addChild(ratings);
@@ -406,6 +408,7 @@ void TitleRenewalScene::realInit()
 	CCLOG("real init on");
 	// 파라미터는 앱 실행 될때 뭔가를 받는게 있을것이다 그걸로 확인
 	CCLOG("t_memeberID : %s, t_diaryCode : %s", graphdog->t_memberID.c_str(), graphdog->t_diaryCode.c_str());
+	CCLOG("1 saved memeberID : %s, diaryCode : %s", myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str(), myDSH->getStringForKey(kDSH_Key_diaryCode).c_str());
 	
 	if(graphdog->t_memberID != "" && graphdog->t_diaryCode != "")
 	{
@@ -426,6 +429,8 @@ void TitleRenewalScene::realInit()
 	graphdog->setMemberID(atoll(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str()));
 	graphdog->setSocialID(myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str());
 	
+	CCLOG("2 saved memeberID : %s, diaryCode : %s", myDSH->getStringForKey(kDSH_Key_diaryMemberID).c_str(), myDSH->getStringForKey(kDSH_Key_diaryCode).c_str());
+	
 	CCLOG("saved param");
 	if(myDSH->getStringForKey(kDSH_Key_diaryMemberID) != "" && myDSH->getStringForKey(kDSH_Key_diaryCode) != "")
 	{
@@ -433,17 +438,19 @@ void TitleRenewalScene::realInit()
 		
 		if(myDSH->is_linked)
 		{
+			CCLOG("linked");
 			setMain();
 		}
 		else
 		{
+			CCLOG("not linked");
 			// 저장된 memberID와 diaryCode가 있음
 			Json::Value t_param;
 			t_param["memberID"] = myDSH->getStringForKey(kDSH_Key_diaryMemberID);
 			t_param["diaryCode"] = myDSH->getStringForKey(kDSH_Key_diaryCode);
 			graphdog->command("login", t_param, [=](Json::Value result_data)
 							  {
-								  setKeypadEnabled(true);
+								  CCLOG("login result : %s", result_data.toStyledString().c_str());
 								  if(result_data["result"]["code"].asInt() == GDSUCCESS)
 								  {
 									  // 다이어리 로그인 api 성공
@@ -484,6 +491,7 @@ void TitleRenewalScene::realInit()
 	}
 	else
 	{
+		CCLOG("don't saved memberID or diaryCode");
 		setMain();
 		
 //		setKeypadEnabled(true);
@@ -873,7 +881,7 @@ void TitleRenewalScene::interlockCall()
 {
 	InterlockPopup* t_popup = InterlockPopup::create(-999, [=]()
 													 {
-														 CCDirector::sharedDirector()->end();
+//														 CCDirector::sharedDirector()->end();
 													 });
 	addChild(t_popup, 999);
 }
@@ -881,7 +889,7 @@ void TitleRenewalScene::setupCall()
 {
 	SetUpPopup* t_popup = SetUpPopup::create(-999, [=]()
 											 {
-												 CCDirector::sharedDirector()->end();
+//												 CCDirector::sharedDirector()->end();
 											 });
 	addChild(t_popup, 999);
 }

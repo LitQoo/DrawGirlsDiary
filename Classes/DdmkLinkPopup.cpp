@@ -171,9 +171,6 @@ void DdmkLinkPopup::buttonAction(CCObject* sender, CCControlEvent t_event)
 	{
 		myHSP->openUrl(graphdog->getGameDownUrl());
 		
-		addChild(KSTimer::create(0.1f, [=]()
-								 {
-									 CCDirector::sharedDirector()->end();
-								 }));
+		is_menu_enable = true;
 	}
 }

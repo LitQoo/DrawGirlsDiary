@@ -18,6 +18,7 @@
 #include "MyLocalization.h"
 #include "LoadingLayer.h"
 #include "ASPopupView.h"
+#include "AlertEngine.h"
 
 ZoomScrollView* ZoomScrollView::create(CCSize t_init_size)
 {
@@ -652,6 +653,20 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 	
 	if(is_all_on)
 	{
+		LoadingLayer* tt_loading;
+		if(myDSH->is_linked)
+		{
+			t_loading = LoadingLayer::create(-99999, true);
+			addChild(t_loading, 99999);
+			t_loading->startLoading();
+		}
+		else
+		{
+			tt_loading = LoadingLayer::create(-99999, true);
+			addChild(tt_loading, 99999);
+			tt_loading->startLoading();
+			tt_loading->setVisible(false);
+		}
 		is_on_touch = true;
 		success_label = CCSprite::create("subapp_clear.png"); //KSLabelTTF::create("성공!!", mySGD->getFont().c_str(), 35);
 		success_label->setPosition(ccp(0,0));
@@ -675,11 +690,11 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 												   
 												   if(myDSH->is_linked)
 													{
-														// 통신해서 생명의 돌 줌
-														t_loading = LoadingLayer::create(-99999, true);
-														addChild(t_loading, 99999);
-														t_loading->startLoading();
+//														t_loading = LoadingLayer::create(-99999, true);
+//														addChild(t_loading, 99999);
+//														t_loading->startLoading();
 														
+														// 통신해서 생명의 돌 줌
 														string ex_id;
 														if(size_value == 1)
 															ex_id = "diaryRewardLow";
@@ -713,6 +728,7 @@ void PieceGame::changePosition(CCPoint before_position, CCPoint after_touch_poin
 																																			   success_label->setScale(t_f);
 																																			   success_label->removeFromParent();
 																																			   initGame();
+																																			   tt_loading->removeFromParent();
 																																		   }));
 																				 }));
 													}
@@ -724,8 +740,6 @@ void PieceGame::resultReward(Json::Value result_data)
 {
 	if(result_data["result"]["code"].asInt() == GDSUCCESS)
 	{
-		t_loading->removeFromParent();
-		
 		mySGD->network_check_cnt = 0;
 		
 		life_stone_count->setString(ccsf("%d", mySGD->getGoodsValue(GoodsType::kGoodsType_pass6)));
@@ -747,6 +761,7 @@ void PieceGame::resultReward(Json::Value result_data)
 																							   success_label->setScale(t_f);
 																							   success_label->removeFromParent();
 																							   initGame();
+																							   t_loading->removeFromParent();
 																						   }));
 								 }));
 	}
@@ -777,6 +792,7 @@ void PieceGame::resultReward(Json::Value result_data)
 void PieceGame::onEnterTransitionDidFinish()
 {
 	CCLayer::onEnterTransitionDidFinish();
+	setKeypadEnabled(true);
 }
 
 void PieceGame::scrollViewDidScroll(CCScrollView* view)
@@ -807,4 +823,17 @@ void PieceGame::scrollViewDidZoom(CCScrollView* view)
 	{
 		view->setContentOffset(ccp(newX, newY), false);
 	}
+}
+
+void PieceGame::alertAction(int t1, int t2)
+{
+	if(t1 == 1 && t2 == 0)
+	{
+		CCDirector::sharedDirector()->end();
+	}
+}
+
+void PieceGame::keyBackClicked()
+{
+	AlertEngine::sharedInstance()->addDoubleAlert("Exit", MyLocal::sharedInstance()->getLocalForKey(kMyLocalKey_exit), "Ok", "Cancel", 1, this, alertfuncII_selector(PieceGame::alertAction));
 }

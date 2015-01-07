@@ -103,6 +103,9 @@ private:
 	void scrollViewDidScroll(CCScrollView* view);
 	void scrollViewDidZoom(CCScrollView* view);
 	void resultReward(Json::Value result_data);
+	
+	void alertAction(int t1, int t2);
+	virtual void keyBackClicked();
 };
 
 #endif /* defined(__DgDiary__PieceGame__) */

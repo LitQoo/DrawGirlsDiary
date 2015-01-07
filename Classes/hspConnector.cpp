@@ -476,7 +476,7 @@ string hspConnector::getServerAddress(){
 //	return r.c_str();
 	
 //	return "http://119.205.240.44:10080";//real
-	//return "http://182.162.196.182:10080"; //alpha
+//	return "http://182.162.196.182:10080"; //alpha
 	return "http://182.162.201.147:10010";//dev
 	
 	
